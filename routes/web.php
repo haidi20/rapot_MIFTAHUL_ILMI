@@ -14,3 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', 'DashboardController@index');
+
+Route::group(['prefix' => 'master'], function() {
+    Route::get('class', 'MasterClassController@index');
+});
