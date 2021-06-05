@@ -14,18 +14,18 @@
                     <span class="pcoded-mtext">Master</span>
                 </a>
                 <ul class="pcoded-submenu">
-                    <li class="{{ active_menu('master/class/*') }}">
+                    <li class="{{ active_menu('master/class*') }}">
                         <a href="{{url('master/class')}}">
                             <span class="pcoded-mtext">Kelas</span>
                         </a>
                     </li>
-                    <li class="{{ active_menu('master/student/*') }}">
-                        <a href="dashboard-crm.html">
+                    <li class="{{ active_menu('master/student*') }}">
+                        <a href="{{url('master/student')}}">
                             <span class="pcoded-mtext">Peserta</span>
                         </a>
                     </li>
-                    <li class="{{ active_menu('master/absen-type/*') }}">
-                        <a href="dashboard-analytics.html">
+                    <li class="{{ active_menu('master/absen-type*') }}">
+                        <a href="{{url('master/absen-type')}}">
                             <span class="pcoded-mtext">Jenis Absen</span>
                         </a>
                     </li>

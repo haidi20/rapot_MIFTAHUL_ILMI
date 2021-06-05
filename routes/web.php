@@ -27,4 +27,15 @@ Route::group(['prefix' => 'master'], function() {
         Route::post('update/{id}', 'MasterClassController@update')->name('masterClass.update');
         Route::get('delete/{id}', 'MasterClassController@delete')->name('masterClass.delete');
     });
+
+    Route::group(['prefix' => 'student'], function() {
+        Route::get('', 'MasterStudentController@index')->name("masterStudent");
+        Route::get('ajaxRead', 'MasterStudentController@ajaxRead');
+        Route::get('ajaxReadTypeahead', 'MasterStudentController@ajaxReadTypeahead');
+        Route::get('create', 'MasterStudentController@create')->name('masterStudent.create');
+        Route::get('edit/{id}', 'MasterStudentController@edit')->name('masterStudent.edit');
+        Route::post('store', 'MasterStudentController@store')->name('masterStudent.store');
+        Route::post('update/{id}', 'MasterStudentController@update')->name('masterStudent.update');
+        Route::get('delete/{id}', 'MasterStudentController@delete')->name('masterStudent.delete');
+    });
 });

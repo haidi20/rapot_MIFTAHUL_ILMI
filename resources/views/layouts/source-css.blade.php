@@ -65,4 +65,8 @@
     .table td, .table th {
         padding: .30rem;
     }
+
+    .fas {
+        color: white;
+    }
 </style>

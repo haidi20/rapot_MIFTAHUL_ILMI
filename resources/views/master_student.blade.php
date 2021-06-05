@@ -14,7 +14,7 @@
             <div class="col-sm-12 col-md-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5>Masukkan Data Kelas</h5>
+                        <h5>Masukkan Data Murid</h5>
 
                         <form action="{{ $action }}" method="post" id="form" >
                             {{ csrf_field() }}
@@ -22,24 +22,8 @@
                                 <div class="col-sm-12 col-md-12">
                                     <div class="form-group row custom-form">
                                         <div class="col-sm-12 col-md-12">
-                                            <label class="block"> Nama Kelas </label>
-                                            <input class="form-control" type="text" name="name_class_room" id="name_class_room" value="{{old('name_class_room')}}" placeholder="contoh: MUSTAWAL AWWAL">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-sm-12 col-md-12">
-                                            <label class="block"> Nama Pemateri </label>
-                                            <input class="form-control" type="text" name="name_speaker" id="name_speaker" value="{{old('name_speaker')}}">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-sm-12 col-md-12">
-                                            <label class="block"> Penjelasan Kelas </label>
-                                            <textarea
-                                                class="form-control" name="description"
-                                                id="description" cols="30" rows="10"
-                                                placeholder="contoh : Absensi Kelas IQRO Senin, 12.30 - 14.00 wib/ 13.30 - 15.00 wita"
-                                                >{{old('description')}}</textarea>
+                                            <label class="block"> Nama Murid </label>
+                                            <input class="form-control" type="text" name="name_student" id="name_student" value="{{old('name_student')}}">
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -57,9 +41,9 @@
                 {!! session()->get('message') !!}
                 <div class="card">
                     <div class="card-body">
-                        <h5> Kelas </h5>
+                        <h5> Murid </h5>
 
-                        <table id="class_room"></table>
+                        <table id="student"></table>
                     </div>
                 </div>
             </div>
@@ -73,10 +57,8 @@
         var data = [];
         var form = $('#form');
         var btnSave = $('#btnSave');
-        var idClassRoom = $('#class_room');
-        var description = $('#description');
-        var nameSpeaker = $('#name_speaker');
-        var nameClassRoom = $('#name_class_room');
+        var idClassRoom = $('#student');
+        var nameClassRoom = $('#name_student');
 
         $(document).ready(function() {
             readData();
@@ -86,16 +68,14 @@
             data = idClassRoom.bootstrapTable('getData');
             form.attr('action', $('#edit_'+index).attr('data-link'));
 
-            nameClassRoom.val(data[index].name_class_room);
-            nameSpeaker.val(data[index].name_speaker);
-            description.val(data[index].description);
+            nameClassRoom.val(data[index].name_student);
         }
 
         function remove(index) {
             data = idClassRoom.bootstrapTable('getData');
 
             Swal.fire({
-                title: 'Yakin hapus data kelas <b>'+data[index].name_class_room+'</b> ?',
+                title: 'Yakin hapus data kelas <b>'+data[index].name_student+'</b> ?',
                 showDenyButton: false,
                 icon: 'question',
                 showCancelButton: true,
@@ -104,7 +84,7 @@
             }).then((result) => {
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {
-                    location.href = `{{url('master/class/delete')}}/${data[index].id}`;
+                    location.href = `{{url('master/student/delete')}}/${data[index].id}`;
                     // Swal.fire('Data terhapus!', '', 'success')
                 } else if (result.isDenied) {
                     Swal.fire('Data tidak dihapus', '', 'info');
@@ -114,7 +94,7 @@
 
         function readData() {
             idClassRoom.bootstrapTable({
-                url: "{{url('/master/class/ajaxRead')}}",
+                url: "{{url('/master/student/ajaxRead')}}",
                 method: 'get',
                 locale: 'en-US',
                 classes: 'table table-bordered table-hover',
@@ -132,23 +112,15 @@
                         title: 'Action',
                         formatter: function (value, row, index) {
                             var str = '';
-                            str += `<a type="button" id="edit_${index}" data-link="{{url('master/class/update')}}/${row.id}" onclick="edit('${index}')" class="btn btn-info btn-xsm"><i class="fas fa-pencil-alt"></i></i></a> &nbsp;`;
-                            str += `<a type="button" id="remove_${index}" data-link="{{url('master/class/delete')}}/${row.id}" onclick="remove('${index}')" class="btn btn-danger btn-xsm"><i class="fas fa-trash"></i></a>`;
+                            str += `<a type="button" id="edit_${index}" data-link="{{url('master/student/update')}}/${row.id}" onclick="edit('${index}')" class="btn btn-info btn-xsm"><i class="fas fa-pencil-alt"></i></i></a> &nbsp;`;
+                            str += `<a type="button" id="remove_${index}" data-link="{{url('master/student/delete')}}/${row.id}" onclick="remove('${index}')" class="btn btn-danger btn-xsm"><i class="fas fa-trash"></i></a>`;
 
                             return str;
                         },
                     },
                     {
-                        field: 'name_class_room',
-                        title: 'Nama Kelas',
-                    },
-                    {
-                        field: 'name_speaker',
-                        title: 'Nama Pemateri',
-                    },
-                    {
-                        field: 'description',
-                        title: 'Penjelasan Kelas',
+                        field: 'name_student',
+                        title: 'Nama Murid',
                     },
                 ]
             });

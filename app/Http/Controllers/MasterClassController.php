@@ -22,8 +22,8 @@ class MasterClassController extends Controller
 
         if(request("search") != null) {
             $iTbl = $iTbl->where('name_class_room', 'like', '%'.request('search').'%')
-            ->orWhere('description', 'like', '%'.request('search').'%')
-            ->orWhere('name_speaker', 'like', '%'.request('search').'%');
+                        ->orWhere('description', 'like', '%'.request('search').'%')
+                        ->orWhere('name_speaker', 'like', '%'.request('search').'%');
         }
 
         $total = $iTbl->count();
@@ -36,7 +36,8 @@ class MasterClassController extends Controller
         $iTbl = ClassRoom::where('is_deleted', 0)->orderBy('name_class_room');
 
         if(request("search") != null) {
-           $iTbl = $iTbl->orWhere('name_class_room', 'like', '%'.request('search').'%')
+            $iTbl = $iTbl->where('name_class_room', 'like', '%'.request('search').'%')
+                        ->orWhere('description', 'like', '%'.request('search').'%')
                         ->orWhere('name_speaker', 'like', '%'.request('search').'%');
         }
 
