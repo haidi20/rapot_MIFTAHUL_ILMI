@@ -19,26 +19,28 @@ class MasterStudentController extends Controller
     }
 
     public function ajaxRead() {
-        $iTbl = Student::where('is_deleted', 0)->orderBy('name_student');
+        $iTbl = Student::orderBy('name_student');
 
         if(request("search") != null) {
-            $iTbl = $iTbl->where('name_student', 'like', '%'.request('search').'%');
+            $iTbl = $iTbl->where('is_deleted', 0)
+                        ->where('name_student', 'like', '%'.request('search').'%');
         }
 
+        $data = $iTbl->where('is_deleted', 0)->skip(request('offset'))->take(request('limit'))->get();
         $total = $iTbl->count();
-        $data = $iTbl->skip(request('offset'))->take(request('limit'))->get();
 
         return response()->json( [ "rows" => $data, "data" => $iTbl, "total" => $total, "offset" => request('offset'), "limit" => request('limit'), "search" => request('search')]);
     }
 
     public function ajaxReadTypeahead() {
-        $iTbl = Student::where('is_deleted', 0)->orderBy('name_student');
+        $iTbl = Student::orderBy('name_student');
 
         if(request("search") != null) {
-           $iTbl = $iTbl->orWhere('name_student', 'like', '%'.request('search').'%');
+           $iTbl = $iTbl->where('is_deleted', 0)
+                        ->orWhere('name_student', 'like', '%'.request('search').'%');
         }
 
-        $iTbl = $iTbl->get();
+        $iTbl = $iTbl->where('is_deleted', 0)->get();
 
         return response()->json( ["data" => $iTbl]);
     }

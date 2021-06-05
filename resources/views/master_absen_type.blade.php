@@ -34,7 +34,7 @@
                                     </div>
                                     <div class="form-group row">
                                         <div class="col-sm-12 col-md-12">
-                                            <button type="submit" class="btn btn-md btn-success " id="btnSave">Save</button>
+                                            <button type="submit" class="btn btn-md btn-success " id="btnSave">Kirim</button>
                                         </div>
                                     </div>
                                 </div>

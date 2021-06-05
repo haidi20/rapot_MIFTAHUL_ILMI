@@ -31,7 +31,7 @@
                     </li>
                 </ul>
             </li>
-            <li class="{{ active_menu('/quiz') }}">
+            <li class="{{ active_menu('quiz') }}">
                 <a href="{{url('quiz')}}">
                     <span class="pcoded-micon"><i class="feather icon-edit-1"></i></span>
                     <span class="pcoded-mtext">Kuis</span>

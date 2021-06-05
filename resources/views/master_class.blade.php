@@ -23,7 +23,7 @@
                                     <div class="form-group row custom-form">
                                         <div class="col-sm-12 col-md-12">
                                             <label class="block"> Nama Kelas </label>
-                                            <input class="form-control" type="text" name="name_class_room" id="name_class_room" value="{{old('name_class_room')}}" placeholder="contoh: MUSTAWAL AWWAL">
+                                            <input class="form-control" type="text" name="name_class_room" id="name_class_room" value="{{old('name_class_room')}}" placeholder="contoh: senin pagi">
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -44,7 +44,7 @@
                                     </div>
                                     <div class="form-group row">
                                         <div class="col-sm-12 col-md-12">
-                                            <button type="submit" class="btn btn-md btn-success " id="btnSave">Save</button>
+                                            <button type="submit" class="btn btn-md btn-success " id="btnSave">Kirim</button>
                                         </div>
                                     </div>
                                 </div>

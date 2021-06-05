@@ -2,28 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AbsenType;
+use App\Models\ClassRoom;
+use App\Models\Quiz;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Webpatser\Uuid\Uuid;
 
-class MasterAbsenTypeController extends Controller
+class QuizController extends Controller
 {
 
     public function index() {
-        $action = route('masterAbsenType.store');
+        $action = route('quiz.store');
+        $classRoom = ClassRoom::where('is_deleted', 0)->get();
 
-        return view('master_absen_type', compact('action'));
+        return view('quiz', compact('action', 'classRoom'));
     }
 
     public function ajaxRead() {
-        $iTbl = AbsenType::orderBy('name_absen_type');
+        $iTbl = Quiz::orderBy('name_quiz');
 
         if(request("search") != null) {
             $iTbl = $iTbl->where('is_deleted', 0)
-                        ->Where('name_absen_type', 'like', '%'.request('search').'%')
-                        ->orWhere('description', 'like', '%'.request('search').'%');
+                        ->where('name_quiz', 'like', '%'.request('search').'%');
         }
 
         $data = $iTbl->where('is_deleted', 0)->skip(request('offset'))->take(request('limit'))->get();
@@ -33,10 +34,11 @@ class MasterAbsenTypeController extends Controller
     }
 
     public function ajaxReadTypeahead() {
-        $iTbl = AbsenType::where('is_deleted', 0)->orderBy('name_absen_type');
+        $iTbl = Quiz::orderBy('name_quiz');
 
         if(request("search") != null) {
-           $iTbl = $iTbl->orWhere('name_absen_type', 'like', '%'.request('search').'%');
+           $iTbl = $iTbl->where('is_deleted', 0)
+                        ->orWhere('name_quiz', 'like', '%'.request('search').'%');
         }
 
         $iTbl = $iTbl->where('is_deleted', 0)->get();
@@ -44,42 +46,18 @@ class MasterAbsenTypeController extends Controller
         return response()->json( ["data" => $iTbl]);
     }
 
-    public function create() {
-        return $this->form();
-    }
-
-    public function edit($id) {
-        return $this->form($id);
-    }
-
-    private function form($id = null) {
-
-        $absenType = AbsenType::where('id', $id)->first();
-        if($absenType)
-		{
-			$action = route('masterAbsenType.update',$id);
-			session()->flash('_old_input', $absenType);
-		}else {
-            $action = route('masterAbsenType.store');
-        }
-
-		// $categories = $this->category->pluck('name', 'id');
-		return view('master_absen_type_form', compact('action'));
-    }
-
     public function store() {
-        // return request()->all();
+        return request()->all();
 
         try {
             DB::beginTransaction();
 
-            $absenType = DB::table("absen_type");
+            $quiz = DB::table("quiz");
             $id = (string) Uuid::generate();
 
-            $absenType->insert(array(
+            $quiz->insert(array(
                 "id" => $id,
-                "name_absen_type" => request('name_absen_type'),
-                "description" => request('description'),
+                "name_quiz" => request('name_quiz'),
                 "created_at" => Carbon::now(),
             ));
 
@@ -94,18 +72,17 @@ class MasterAbsenTypeController extends Controller
             flash_message('message', 'danger', 'close', 'Data gagal di dibuat');
         }
 
-        return redirect()->route('masterAbsenType');
+        return redirect()->route('quiz');
     }
 
     public function update($id) {
         try {
             DB::beginTransaction();
 
-            $absenType = DB::table("absen_type")->where('id', $id);
+            $quiz = DB::table("quiz")->where('id', $id);
 
-            $absenType->update(array(
-                "name_absen_type" => request('name_absen_type'),
-                "description" => request('description'),
+            $quiz->update(array(
+                "name_quiz" => request('name_quiz'),
                 "updated_at" => Carbon::now(),
             ));
 
@@ -117,17 +94,17 @@ class MasterAbsenTypeController extends Controller
             flash_message('message', 'danger', 'close', 'Data gagal di disimpan');
         }
 
-        return redirect()->route('masterAbsenType');
+        return redirect()->route('quiz');
     }
 
     public function delete($id) {
-        $absenType = DB::table("absen_type")->where('id', $id);
+        $quiz = DB::table("quiz")->where('id', $id);
 
-         $absenType->update(array(
+         $quiz->update(array(
             "is_deleted" => 1,
         ));
 
         flash_message('message', 'success', 'check', 'Data telah dihapus');
-        return redirect()->route('masterAbsenType');
+        return redirect()->route('quiz');
     }
 }

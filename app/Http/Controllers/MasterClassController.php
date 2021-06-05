@@ -18,16 +18,19 @@ class MasterClassController extends Controller
     }
 
     public function ajaxRead() {
-        $iTbl = ClassRoom::where('is_deleted', 0)->orderBy('name_class_room');
+        DB::enableQueryLog(); // Enable query log
+        $iTbl = ClassRoom::orderBy('name_class_room');
 
         if(request("search") != null) {
-            $iTbl = $iTbl->where('name_class_room', 'like', '%'.request('search').'%')
-                        ->orWhere('description', 'like', '%'.request('search').'%')
-                        ->orWhere('name_speaker', 'like', '%'.request('search').'%');
+            $iTbl = $iTbl->where('is_deleted', 0)
+                        ->where('name_class_room', 'like', '%'.request('search').'%')
+                        ->orWhere('description', 'like', '%'.request('search').'%');
         }
 
+        $data = $iTbl->where('is_deleted', 0)->skip(request('offset'))->take(request('limit'))->get();
         $total = $iTbl->count();
-        $data = $iTbl->skip(request('offset'))->take(request('limit'))->get();
+
+        // dd(DB::getQueryLog());
 
         return response()->json( [ "rows" => $data, "data" => $iTbl, "total" => $total, "offset" => request('offset'), "limit" => request('limit'), "search" => request('search')]);
     }
@@ -36,12 +39,12 @@ class MasterClassController extends Controller
         $iTbl = ClassRoom::where('is_deleted', 0)->orderBy('name_class_room');
 
         if(request("search") != null) {
-            $iTbl = $iTbl->where('name_class_room', 'like', '%'.request('search').'%')
-                        ->orWhere('description', 'like', '%'.request('search').'%')
-                        ->orWhere('name_speaker', 'like', '%'.request('search').'%');
+            $iTbl = $iTbl->where('is_deleted', 0)
+                        ->where('name_class_room', 'like', '%'.request('search').'%')
+                        ->orWhere('description', 'like', '%'.request('search').'%');
         }
 
-        $iTbl = $iTbl->get();
+        $iTbl = $iTbl->where('is_deleted', 0)->get();
 
         return response()->json( ["data" => $iTbl]);
     }
