@@ -16,5 +16,15 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', 'DashboardController@index');
 
 Route::group(['prefix' => 'master'], function() {
-    Route::get('class', 'MasterClassController@index');
+    // Route::get('class', 'MasterClassController@index');
+    Route::group(['prefix' => 'class'], function() {
+        Route::get('', 'MasterClassController@index')->name("masterClass");
+        Route::get('ajaxRead', 'MasterClassController@ajaxRead');
+        Route::get('ajaxReadTypeahead', 'MasterClassController@ajaxReadTypeahead');
+        Route::get('create', 'MasterClassController@create')->name('masterClass.create');
+        Route::get('edit/{id}', 'MasterClassController@edit')->name('masterClass.edit');
+        Route::post('store', 'MasterClassController@store')->name('masterClass.store');
+        Route::post('update/{id}', 'MasterClassController@update')->name('masterClass.update');
+        Route::get('delete/{id}', 'MasterClassController@delete')->name('masterClass.delete');
+    });
 });

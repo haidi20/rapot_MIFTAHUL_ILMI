@@ -8,30 +8,30 @@
                     <span class="pcoded-mtext">Dashboard</span>
                 </a>
             </li>
-            <li class="pcoded-hasmenu">
+            <li class="pcoded-hasmenu {{ active_menu_list('master/*') }}">
                 <a href="javascript:void(0)">
                     <span class="pcoded-micon"><i class="feather icon-grid"></i></span>
                     <span class="pcoded-mtext">Master</span>
                 </a>
                 <ul class="pcoded-submenu">
-                    <li class="">
+                    <li class="{{ active_menu('master/class/*') }}">
                         <a href="{{url('master/class')}}">
                             <span class="pcoded-mtext">Kelas</span>
                         </a>
                     </li>
-                    <li class="">
+                    <li class="{{ active_menu('master/student/*') }}">
                         <a href="dashboard-crm.html">
                             <span class="pcoded-mtext">Peserta</span>
                         </a>
                     </li>
-                    <li class=" ">
+                    <li class="{{ active_menu('master/absen-type/*') }}">
                         <a href="dashboard-analytics.html">
                             <span class="pcoded-mtext">Jenis Absen</span>
                         </a>
                     </li>
                 </ul>
             </li>
-            <li class="{{ active_menu('/') }}">
+            <li class="{{ active_menu('/quiz') }}">
                 <a href="{{url('quiz')}}">
                     <span class="pcoded-micon"><i class="feather icon-edit-1"></i></span>
                     <span class="pcoded-mtext">Kuis</span>

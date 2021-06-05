@@ -9,6 +9,14 @@ if( ! function_exists('active_menu') )
     }
 }
 
+if( ! function_exists('active_menu_list') )
+{
+    function active_menu_list($pattern)
+    {
+        return request()->is($pattern) ? 'pcoded-trigger' : '';
+    }
+}
+
 if( ! function_exists('val_checkbox') )
 {
     function val_checkbox($value) {
