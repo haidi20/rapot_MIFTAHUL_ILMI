@@ -5,6 +5,14 @@
         .custom-form {
             margin-top: 50px;
         }
+        .form-select-student {
+            width: 85%;
+            display: inline-block;
+        }
+        .btn-delete-student {
+            margin-left: 5px;
+            display: inline-block;
+        }
     </style>
 @endsection
 
@@ -20,7 +28,12 @@
                             {{ csrf_field() }}
                             <div class="row">
                                 <div class="col-sm-12 col-md-12">
-                                    <div class="form-group row custom-form">
+                                    <div class="form-group row">
+                                        <div class="col-sm-12 col-md-12">
+                                            <a href="#" type="button" class="btn btn-sm btn-info" onclick="addFormStudent()">Tambah Peserta</a>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
                                         <div class="col-sm-12 col-md-12">
                                             <label class="block"> Kelas </label>
                                             <select name="class_room_id" class="form-control form-control-inverse">
@@ -43,7 +56,7 @@
                                     <div class="form-group row multi-student">
                                         <div class="col-sm-12 col-md-12">
                                             <label class="block"> Pilih Peserta </label>
-                                            <select name="student[]" class="form-control form-control-inverse">
+                                            <select name="student[]" class="form-control form-control-inverse ">
 
                                             </select>
                                         </div>
@@ -76,11 +89,16 @@
 
 @section('script')
     <script>
+        var state = {
+            countFormStudent: 1,
+        }
+
         var data = [];
         var form = $('#form');
         var btnSave = $('#btnSave');
         var idClassRoom = $('#quiz');
         var nameClassRoom = $('#name_quiz');
+        var multiStudent = $('.multi-student');
 
         $(document).ready(function() {
             readData();
@@ -151,6 +169,34 @@
 
         function loadDataStudent() {
 
+        }
+
+        function addFormStudent() {
+            var newFormStudent = '';
+            var countFormStudent = state.countFormStudent + 1;
+            state.countFormStudent = countFormStudent;
+
+            newFormStudent += '<div class="form-group row multi-student" id="form_student_'+countFormStudent+'">';
+                newFormStudent +='<div class="col-sm-12 col-md-12">';
+                    newFormStudent +='<label class="block"> Pilih Peserta </label>';
+                    newFormStudent +='<select name="student[]" class="form-control form-control-inverse form-select-student">';
+                        newFormStudent += '<option> coba </option>';
+                        newFormStudent += '<option> keren </option>';
+                    newFormStudent +='</select>';
+                    newFormStudent +='<button type="submit" class="btn btn-sm btn-danger btn-delete-student" onclick="removeFormStudent('+countFormStudent+')">';
+                        newFormStudent += '<i class="fas fa-close"></i>';
+                    newFormStudent +='</button>';
+                newFormStudent +='</div>';
+            newFormStudent +='</div>';
+
+            multiStudent.after(newFormStudent);
+        }
+
+        function removeFormStudent(index) {
+            var countFormStudent = state.countFormStudent - 1;
+            state.countFormStudent = countFormStudent;
+
+            $('#form_student_'+index).remove();
         }
     </script>
 @endsection
