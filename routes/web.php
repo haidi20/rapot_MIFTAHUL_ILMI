@@ -38,4 +38,15 @@ Route::group(['prefix' => 'master'], function() {
         Route::post('update/{id}', 'MasterStudentController@update')->name('masterStudent.update');
         Route::get('delete/{id}', 'MasterStudentController@delete')->name('masterStudent.delete');
     });
+
+    Route::group(['prefix' => 'absen-type'], function() {
+        Route::get('', 'MasterAbsenTypeController@index')->name("masterAbsenType");
+        Route::get('ajaxRead', 'MasterAbsenTypeController@ajaxRead');
+        Route::get('ajaxReadTypeahead', 'MasterAbsenTypeController@ajaxReadTypeahead');
+        Route::get('create', 'MasterAbsenTypeController@create')->name('masterAbsenType.create');
+        Route::get('edit/{id}', 'MasterAbsenTypeController@edit')->name('masterAbsenType.edit');
+        Route::post('store', 'MasterAbsenTypeController@store')->name('masterAbsenType.store');
+        Route::post('update/{id}', 'MasterAbsenTypeController@update')->name('masterAbsenType.update');
+        Route::get('delete/{id}', 'MasterAbsenTypeController@delete')->name('masterAbsenType.delete');
+    });
 });

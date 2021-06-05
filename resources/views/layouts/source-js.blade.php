@@ -59,4 +59,8 @@ var substringMatcher = function(strs) {
         cb(matches);
     };
 };
+
+setTimeout(function(){
+    $('.alert').hide();
+}, 3000)
 </script>

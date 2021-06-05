@@ -11,7 +11,7 @@
             <li class="pcoded-hasmenu {{ active_menu_list('master/*') }}">
                 <a href="javascript:void(0)">
                     <span class="pcoded-micon"><i class="feather icon-grid"></i></span>
-                    <span class="pcoded-mtext">Master</span>
+                    <span class="pcoded-mtext">Utama</span>
                 </a>
                 <ul class="pcoded-submenu">
                     <li class="{{ active_menu('master/class*') }}">

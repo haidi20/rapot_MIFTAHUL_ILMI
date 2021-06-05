@@ -14,7 +14,7 @@
             <div class="col-sm-12 col-md-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5>Masukkan Data Murid</h5>
+                        {{-- <h5>Masukkan Data Murid</h5> --}}
 
                         <form action="{{ $action }}" method="post" id="form" >
                             {{ csrf_field() }}
@@ -41,7 +41,7 @@
                 {!! session()->get('message') !!}
                 <div class="card">
                     <div class="card-body">
-                        <h5> Murid </h5>
+                        <h5> Data Murid </h5>
 
                         <table id="student"></table>
                     </div>
