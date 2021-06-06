@@ -20,15 +20,24 @@ class QuizController extends Controller
     }
 
     public function ajaxRead() {
+        DB::enableQueryLog();
         $iTbl = Quiz::orderBy('name_quiz');
 
         if(request("search") != null) {
-            $iTbl = $iTbl->where('is_deleted', 0)
+            $iTbl = $iTbl->where('quiz.is_deleted', 0)
                         ->where('name_quiz', 'like', '%'.request('search').'%');
         }
 
-        $data = $iTbl->where('is_deleted', 0)->skip(request('offset'))->take(request('limit'))->get();
+        $data = $iTbl->where('quiz.is_deleted', 0)->skip(request('offset'))->take(request('limit'))->get();
         $total = $iTbl->count();
+
+        $data = $data->map(function($row) {
+            $row->absens = DB::table('absen')->where('quiz_id', $row->id)->get();
+
+            return $row;
+        });
+
+        // dd(DB::getQueryLog());
 
         return response()->json( [ "rows" => $data, "data" => $iTbl, "total" => $total, "offset" => request('offset'), "limit" => request('limit'), "search" => request('search')]);
     }
@@ -38,6 +47,7 @@ class QuizController extends Controller
 
         if(request("search") != null) {
            $iTbl = $iTbl->where('is_deleted', 0)
+                        ->where('class_room_id', 'like', '%'.request('search').'%')
                         ->orWhere('name_quiz', 'like', '%'.request('search').'%');
         }
 
@@ -47,19 +57,31 @@ class QuizController extends Controller
     }
 
     public function store() {
-        return request()->all();
+        // return request()->all();
 
         try {
             DB::beginTransaction();
 
             $quiz = DB::table("quiz");
             $id = (string) Uuid::generate();
+            $idAbsen = (string) Uuid::generate();
 
             $quiz->insert(array(
                 "id" => $id,
+                "class_room_id" => request('class_room_id'),
                 "name_quiz" => request('name_quiz'),
                 "created_at" => Carbon::now(),
             ));
+
+            foreach (request('students') as $index => $item) {
+                $absen = DB::table('absen');
+                $absen->insert(array(
+                    "id" => $idAbsen,
+                    "quiz_id" => $id,
+                    "student_id" => $item,
+                    "created_at" => Carbon::now(),
+                ));
+            }
 
             flash_message('message', 'success', 'check', 'Data telah dibuat');
 

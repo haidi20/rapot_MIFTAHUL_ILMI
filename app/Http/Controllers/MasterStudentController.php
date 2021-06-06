@@ -37,7 +37,7 @@ class MasterStudentController extends Controller
 
         if(request("search") != null) {
            $iTbl = $iTbl->where('is_deleted', 0)
-                        ->orWhere('name_student', 'like', '%'.request('search').'%');
+                        ->where('name_student', 'like', '%'.request('search').'%');
         }
 
         $iTbl = $iTbl->where('is_deleted', 0)->get();

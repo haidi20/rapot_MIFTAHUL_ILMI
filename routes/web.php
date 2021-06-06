@@ -53,3 +53,7 @@ Route::group(['prefix' => 'quiz'], function() {
     Route::post('update/{id}', 'QuizController@update')->name('quiz.update');
     Route::get('delete/{id}', 'QuizController@delete')->name('quiz.delete');
 });
+
+Route::group(['prefix' => 'absen'], function() {
+    Route::get('ajaxRead', 'AbsenController@ajaxRead');
+});
