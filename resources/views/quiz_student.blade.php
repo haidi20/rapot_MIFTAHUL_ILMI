@@ -54,8 +54,16 @@
                                     </div>
                                     <div class="form-group row">
                                         <div class="col-sm-12 col-md-12">
-                                            <label class="block"> Nama Kuis </label>
-                                            <input class="form-control" type="text" name="name_quiz" id="name_quiz" value="{{old('name_quiz')}}" placeholder="contoh: MUSTAWA AWWAL">
+                                            <label class="block"> Kuis </label>
+                                            <select name="quiz_id" class="form-control form-control-inverse">
+                                                <option value="">Pilih Kuis</option>
+                                                @foreach ($quiz as $index => $item )
+                                                    <option
+                                                        value="{{$item->id}}">
+                                                        {{$item->name_quiz}}
+                                                    </option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="form-group row multi-student">
@@ -185,7 +193,7 @@
                 var classRoomId = $(this).val();
                 // console.log(classRoomId);
                 $.ajax({
-                    url: "{{url('quiz-student/ajaxReadTypeahead')}}?search="+classRoomId,
+                    url: "{{url('/master/quiz/ajaxReadTypeahead')}}",
                     dataType: "JSON",
                     contentType: "application/json",
                     type: "GET",
@@ -194,6 +202,8 @@
 
                         var optionNewFormStudent = '';
                         state.dataStudent = result.data;
+
+                        console.log(result);
 
                         optionNewFormStudent += '<option> Pilih Kuis </option>';
                         if (result.data[0]) {

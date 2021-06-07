@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ClassRoom;
+use App\Models\Quiz;
 use App\Models\QuizStudent;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -13,33 +14,42 @@ class QuizStudentController extends Controller
 
     public function index() {
         $action = route('quizStudent.store');
+        $quiz = Quiz::where('is_deleted', 0)->get();
         $classRoom = ClassRoom::where('is_deleted', 0)->get();
 
-        return view('quiz_student', compact('action', 'classRoom'));
+        return view('quiz_student', compact('action', 'classRoom', 'quiz'));
     }
 
     public function ajaxRead() {
         DB::enableQueryLog();
-        $iTbl = QuizStudent::orderBy('name_quiz');
-        $iTbl = $iTbl->join('quiz', 'quiz.id', '=', 'quiz_student.quiz_id');
-        // $iTbl = $iTbl->join('class_room', 'class_room.id', '=', 'quiz_student.class_room_id');
-        // $iTbl = $iTbl->join('student', 'student.id', '=', 'quiz.student_id');
 
-        if(request("search") != null) {
-            $iTbl = $iTbl->where('is_deleted', 0)
-                        // ->where('name_class_room', 'like', '%'.request('search').'%')
-                        // ->where('name_student', 'like', '%'.request('search').'%')
-                        ->orWhere('name_quiz', 'like', '%'.request('search').'%');
+        $total = 0;
+        $iTbl = (object) [];
+        $data = [];
+
+        if(request('quis_id') != null) {
+            $iTbl = QuizStudent::orderBy('name_quiz');
+            $iTbl = $iTbl->join('quiz', 'quiz.id', '=', 'quiz_student.quiz_id');
+            // $iTbl = $iTbl->join('class_room', 'class_room.id', '=', 'quiz_student.class_room_id');
+            $iTbl = $iTbl->join('student', 'student.id', '=', 'quiz.student_id');
+
+            if(request("search") != null) {
+                //FILTER BELUM BERHASIL
+                $iTbl = $iTbl->where('is_deleted', 0)
+                            // ->where('name_class_room', 'like', '%'.request('search').'%')
+                            ->where('name_student', 'like', '%'.request('search').'%')
+                            ->orWhere('name_quiz', 'like', '%'.request('search').'%');
+            }
+
+            $data = $iTbl->where('quiz.is_deleted', 0)->skip(request('offset'))->take(request('limit'))->get();
+            $total = $iTbl->count();
+
+            $data = $data->map(function($row) {
+                $row->absens = DB::table('absen')->where('quiz_id', $row->id)->get();
+
+                return $row;
+            });
         }
-
-        $data = $iTbl->where('quiz.is_deleted', 0)->skip(request('offset'))->take(request('limit'))->get();
-        $total = $iTbl->count();
-
-        $data = $data->map(function($row) {
-            $row->absens = DB::table('absen')->where('quiz_id', $row->id)->get();
-
-            return $row;
-        });
 
         // dd(DB::getQueryLog());
 
@@ -50,12 +60,12 @@ class QuizStudentController extends Controller
         $iTbl = QuizStudent::orderBy('name_quiz');
         $iTbl = $iTbl->join('quiz', 'quiz.id', '=', 'quiz_student.quiz_id');
         // $iTbl = $iTbl->join('class_room', 'class_room.id', '=', 'quiz_student.class_room_id');
-        // $iTbl = $iTbl->join('student', 'student.id', '=', 'quiz.student_id');
+        $iTbl = $iTbl->join('student', 'student.id', '=', 'quiz.student_id');
 
         if(request("search") != null) {
            $iTbl = $iTbl->where('is_deleted', 0)
                         // ->where('name_class_room', 'like', '%'.request('search').'%')
-                        // ->where('name_student', 'like', '%'.request('search').'%')
+                        ->where('name_student', 'like', '%'.request('search').'%')
                         ->orWhere('name_quiz', 'like', '%'.request('search').'%');
         }
 
@@ -78,7 +88,7 @@ class QuizStudentController extends Controller
                     "id" => $id,
                     "class_room_id" => request('class_room_id'),
                     "student_id" => $item,
-                    "name_quiz" => request('name_quiz'),
+                    "quiz_id" => request('quiz_id'),
                     "created_at" => Carbon::now(),
                 ));
            }
@@ -104,7 +114,7 @@ class QuizStudentController extends Controller
             flash_message('message', 'danger', 'close', 'Data gagal di dibuat');
         }
 
-        return redirect()->route('quizStudentStudent');
+        return redirect()->route('quizStudent');
     }
 
     // public function update($id) {
@@ -114,7 +124,7 @@ class QuizStudentController extends Controller
     //         $quizStudent = DB::table("quiz_student")->where('id', $id);
 
     //         $quizStudent->update(array(
-    //             "name_quiz" => request('name_quiz'),
+    //             "quiz_id" => request('quiz_id'),
     //             "updated_at" => Carbon::now(),
     //         ));
 
@@ -126,7 +136,7 @@ class QuizStudentController extends Controller
     //         flash_message('message', 'danger', 'close', 'Data gagal di disimpan');
     //     }
 
-    //     return redirect()->route('quizStudentStudent');
+    //     return redirect()->route('quizStudent');
     // }
 
     public function delete($id) {
@@ -137,6 +147,6 @@ class QuizStudentController extends Controller
         ));
 
         flash_message('message', 'success', 'check', 'Data telah dihapus');
-        return redirect()->route('quizStudentStudent');
+        return redirect()->route('quizStudent');
     }
 }
