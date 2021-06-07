@@ -29,12 +29,18 @@
                             <span class="pcoded-mtext">Jenis Absen</span>
                         </a>
                     </li>
+                    <li class="{{ active_menu('master/quiz*') }}">
+                        <a href="{{url('master/quiz')}}">
+                            <span class="pcoded-micon"><i class="feather icon-edit-1"></i></span>
+                            <span class="pcoded-mtext">Kuis</span>
+                        </a>
+                    </li>
                 </ul>
             </li>
-            <li class="{{ active_menu('quiz') }}">
-                <a href="{{url('quiz')}}">
+            <li class="{{ active_menu('quiz-student') }}">
+                <a href="{{url('quiz-student')}}">
                     <span class="pcoded-micon"><i class="feather icon-edit-1"></i></span>
-                    <span class="pcoded-mtext">Kuis</span>
+                    <span class="pcoded-mtext">Isi Kuis</span>
                 </a>
             </li>
         </ul>

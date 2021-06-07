@@ -27,9 +27,18 @@ CREATE TABLE `absen_type` (
 
 CREATE TABLE `quiz` (
   `id` varchar(50),
+  `name_quiz` varchar(255),
+  `description` text,
+  `is_deleted` boolean DEFAULT false,
+  `created_at` datetime,
+  `updated_at` datetime
+);
+
+CREATE TABLE `quiz_student` (
+  `id` varchar(50),
   `class_room_id` varchar(50),
+  `quiz_id` varchar(50),
   `student_id` varchar(50),
-  `name_quiz` varchar(50),
   `value` int,
   `grade` varchar(255),
   `note` text,

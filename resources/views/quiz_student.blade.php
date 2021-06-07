@@ -111,9 +111,9 @@
 
                         <div class="card">
                             <div class="card-body">
-                                <h5> Data Kuis </h5>
+                                <h5> Pengisian Raport </h5>
 
-                                <table id="quiz"></table>
+                                <table id="quiz_student"></table>
                             </div>
                         </div>
                     </div>
@@ -137,11 +137,11 @@
         var data = [];
         var form = $('#form');
         var btnSave = $('#btnSave');
-        var quizTable = $('#quiz');
         var filterQuiz = $('#filter_quiz');
         var nameClassRoom = $('#name_quiz');
         var firstStudent = $('#first_student');
         var multiStudent = $('.multi-student');
+        var quizStudentTable = $('#quiz_student');
 
         $(document).ready(function() {
             readData();
@@ -153,39 +153,39 @@
         });
 
         function edit(index) {
-            data = quizTable.bootstrapTable('getData');
+            data = quizStudentTable.bootstrapTable('getData');
             form.attr('action', $('#edit_'+index).attr('data-link'));
 
             nameClassRoom.val(data[index].name_quiz);
         }
 
-        function remove(index) {
-            data = quizTable.bootstrapTable('getData');
+        // function remove(index) {
+        //     data = quizStudentTable.bootstrapTable('getData');
 
-            Swal.fire({
-                title: 'Yakin hapus data kelas <b>'+data[index].name_quiz+'</b> ?',
-                showDenyButton: false,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: `Delete`,
-                confirmButtonColor: 'red',
-            }).then((result) => {
-                /* Read more about isConfirmed, isDenied below */
-                if (result.isConfirmed) {
-                    location.href = `{{url('quiz/delete')}}/${data[index].id}`;
-                    // Swal.fire('Data terhapus!', '', 'success')
-                } else if (result.isDenied) {
-                    Swal.fire('Data tidak dihapus', '', 'info');
-                }
-            });
-        }
+        //     Swal.fire({
+        //         title: 'Yakin hapus data kelas <b>'+data[index].name_quiz+'</b> ?',
+        //         showDenyButton: false,
+        //         icon: 'question',
+        //         showCancelButton: true,
+        //         confirmButtonText: `Delete`,
+        //         confirmButtonColor: 'red',
+        //     }).then((result) => {
+        //         /* Read more about isConfirmed, isDenied below */
+        //         if (result.isConfirmed) {
+        //             location.href = `{{url('quiz/delete')}}/${data[index].id}`;
+        //             // Swal.fire('Data terhapus!', '', 'success')
+        //         } else if (result.isDenied) {
+        //             Swal.fire('Data tidak dihapus', '', 'info');
+        //         }
+        //     });
+        // }
 
         function selectFilterClassRoom() {
             $('#filter_class').on('click', function(){
                 var classRoomId = $(this).val();
                 // console.log(classRoomId);
                 $.ajax({
-                    url: "{{url('quiz/ajaxReadTypeahead')}}?search="+classRoomId,
+                    url: "{{url('quiz-student/ajaxReadTypeahead')}}?search="+classRoomId,
                     dataType: "JSON",
                     contentType: "application/json",
                     type: "GET",
@@ -226,18 +226,15 @@
 
         function sendFilter() {
             console.log(state.quiz_id);
-            // quizTable.bootstrapTable('refresh');
+            // quizStudentTable.bootstrapTable('refresh');
 
-            quizTable.bootstrapTable('refresh');
+            quizStudentTable.bootstrapTable('refresh');
             readData();
         }
 
         function readData() {
-            console.log('load read data');
-            console.log('quiz id = ' + state.quiz_id);
-
-            quizTable.bootstrapTable({
-                url: "{{url('/absen/ajaxRead')}}",
+            quizStudentTable.bootstrapTable({
+                url: "{{url('/quiz-student/ajaxRead')}}",
                 method: 'get',
                 locale: 'en-US',
                 classes: 'table table-bordered table-hover',
@@ -260,8 +257,8 @@
                         title: 'Action',
                         formatter: function (value, row, index) {
                             var str = '';
-                            // str += `<a type="button" id="edit_${index}" data-link="{{url('absen/update')}}/${row.id}" onclick="edit('${index}')" class="btn btn-info btn-xsm"><i class="fas fa-pencil-alt"></i></i></a> &nbsp;`;
-                            str += `<a type="button" id="remove_${index}" data-link="{{url('absen/delete')}}/${row.id}" onclick="remove('${index}')" class="btn btn-danger btn-xsm"><i class="fas fa-trash"></i></a>`;
+                            // str += `<a type="button" id="edit_${index}" data-link="{{url('quiz-student/update')}}/${row.id}" onclick="edit('${index}')" class="btn btn-info btn-xsm"><i class="fas fa-pencil-alt"></i></i></a> &nbsp;`;
+                            str += `<a type="button" id="remove_${index}" data-link="{{url('quiz-student/delete')}}/${row.id}" onclick="remove('${index}')" class="btn btn-danger btn-xsm"><i class="fas fa-trash"></i></a>`;
 
                             return str;
                         },

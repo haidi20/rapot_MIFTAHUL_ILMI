@@ -45,29 +45,6 @@ class MasterStudentController extends Controller
         return response()->json( ["data" => $iTbl]);
     }
 
-    public function create() {
-        return $this->form();
-    }
-
-    public function edit($id) {
-        return $this->form($id);
-    }
-
-    private function form($id = null) {
-
-        $student = Student::where('id', $id)->first();
-        if($student)
-		{
-			$action = route('masterStudent.update',$id);
-			session()->flash('_old_input', $student);
-		}else {
-            $action = route('masterStudent.store');
-        }
-
-		// $categories = $this->category->pluck('name', 'id');
-		return view('master_student_form', compact('action'));
-    }
-
     public function store() {
         // return request()->all();
 

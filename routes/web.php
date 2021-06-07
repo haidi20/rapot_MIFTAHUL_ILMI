@@ -43,15 +43,24 @@ Route::group(['prefix' => 'master'], function() {
         Route::post('update/{id}', 'MasterAbsenTypeController@update')->name('masterAbsenType.update');
         Route::get('delete/{id}', 'MasterAbsenTypeController@delete')->name('masterAbsenType.delete');
     });
+
+    Route::group(['prefix' => 'quiz'], function() {
+        Route::get('', 'MasterQuizController@index')->name("masterQuiz");
+        Route::get('ajaxRead', 'MasterQuizController@ajaxRead');
+        Route::get('ajaxReadTypeahead', 'MasterQuizController@ajaxReadTypeahead');
+        Route::post('store', 'MasterQuizController@store')->name('masterQuiz.store');
+        Route::post('update/{id}', 'MasterQuizController@update')->name('masterQuiz.update');
+        Route::get('delete/{id}', 'MasterQuizController@delete')->name('masterQuiz.delete');
+    });
 });
 
-Route::group(['prefix' => 'quiz'], function() {
-    Route::get('', 'QuizController@index')->name("quiz");
-    Route::get('ajaxRead', 'QuizController@ajaxRead');
-    Route::get('ajaxReadTypeahead', 'QuizController@ajaxReadTypeahead');
-    Route::post('store', 'QuizController@store')->name('quiz.store');
-    Route::post('update/{id}', 'QuizController@update')->name('quiz.update');
-    Route::get('delete/{id}', 'QuizController@delete')->name('quiz.delete');
+Route::group(['prefix' => 'quiz-student'], function() {
+    Route::get('', 'QuizStudentController@index')->name("quizStudent");
+    Route::get('ajaxRead', 'QuizStudentController@ajaxRead');
+    Route::get('ajaxReadTypeahead', 'QuizStudentController@ajaxReadTypeahead');
+    Route::post('store', 'QuizStudentController@store')->name('quizStudent.store');
+    // Route::post('update/{id}', 'QuizStudentController@update')->name('quizStudent.update');
+    Route::get('delete/{id}', 'QuizStudentController@delete')->name('quizStudent.delete');
 });
 
 Route::group(['prefix' => 'absen'], function() {

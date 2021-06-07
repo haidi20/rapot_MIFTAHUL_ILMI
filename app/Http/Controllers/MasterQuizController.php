@@ -2,42 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ClassRoom;
 use App\Models\Quiz;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Webpatser\Uuid\Uuid;
 
-class QuizController extends Controller
+class MasterQuizController extends Controller
 {
 
     public function index() {
-        $action = route('quiz.store');
-        $classRoom = ClassRoom::where('is_deleted', 0)->get();
+        $action = route('masterQuiz.store');
 
-        return view('quiz', compact('action', 'classRoom'));
+        return view('master_quiz', compact('action'));
     }
 
     public function ajaxRead() {
-        DB::enableQueryLog();
         $iTbl = Quiz::orderBy('name_quiz');
 
         if(request("search") != null) {
-            $iTbl = $iTbl->where('quiz.is_deleted', 0)
+            $iTbl = $iTbl->where('is_deleted', 0)
                         ->where('name_quiz', 'like', '%'.request('search').'%');
         }
 
-        $data = $iTbl->where('quiz.is_deleted', 0)->skip(request('offset'))->take(request('limit'))->get();
+        $data = $iTbl->where('is_deleted', 0)->skip(request('offset'))->take(request('limit'))->get();
         $total = $iTbl->count();
-
-        $data = $data->map(function($row) {
-            $row->absens = DB::table('absen')->where('quiz_id', $row->id)->get();
-
-            return $row;
-        });
-
-        // dd(DB::getQueryLog());
 
         return response()->json( [ "rows" => $data, "data" => $iTbl, "total" => $total, "offset" => request('offset'), "limit" => request('limit'), "search" => request('search')]);
     }
@@ -47,8 +36,7 @@ class QuizController extends Controller
 
         if(request("search") != null) {
            $iTbl = $iTbl->where('is_deleted', 0)
-                        ->where('class_room_id', 'like', '%'.request('search').'%')
-                        ->orWhere('name_quiz', 'like', '%'.request('search').'%');
+                        ->where('name_quiz', 'like', '%'.request('search').'%');
         }
 
         $iTbl = $iTbl->where('is_deleted', 0)->get();
@@ -64,24 +52,13 @@ class QuizController extends Controller
 
             $quiz = DB::table("quiz");
             $id = (string) Uuid::generate();
-            $idAbsen = (string) Uuid::generate();
 
             $quiz->insert(array(
                 "id" => $id,
-                "class_room_id" => request('class_room_id'),
                 "name_quiz" => request('name_quiz'),
+                "description" => request('description'),
                 "created_at" => Carbon::now(),
             ));
-
-            foreach (request('students') as $index => $item) {
-                $absen = DB::table('absen');
-                $absen->insert(array(
-                    "id" => $idAbsen,
-                    "quiz_id" => $id,
-                    "student_id" => $item,
-                    "created_at" => Carbon::now(),
-                ));
-            }
 
             flash_message('message', 'success', 'check', 'Data telah dibuat');
 
@@ -94,7 +71,7 @@ class QuizController extends Controller
             flash_message('message', 'danger', 'close', 'Data gagal di dibuat');
         }
 
-        return redirect()->route('quiz');
+        return redirect()->route('masterQuiz');
     }
 
     public function update($id) {
@@ -105,6 +82,7 @@ class QuizController extends Controller
 
             $quiz->update(array(
                 "name_quiz" => request('name_quiz'),
+                "description" => request('description'),
                 "updated_at" => Carbon::now(),
             ));
 
@@ -116,7 +94,7 @@ class QuizController extends Controller
             flash_message('message', 'danger', 'close', 'Data gagal di disimpan');
         }
 
-        return redirect()->route('quiz');
+        return redirect()->route('masterQuiz');
     }
 
     public function delete($id) {
@@ -127,6 +105,6 @@ class QuizController extends Controller
         ));
 
         flash_message('message', 'success', 'check', 'Data telah dihapus');
-        return redirect()->route('quiz');
+        return redirect()->route('masterQuiz');
     }
 }
