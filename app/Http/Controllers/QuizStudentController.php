@@ -21,31 +21,32 @@ class QuizStudentController extends Controller
     }
 
     public function ajaxRead() {
-        DB::enableQueryLog();
+        // DB::enableQueryLog();
 
         $total = 0;
         $iTbl = (object) [];
         $data = [];
 
-        if(request('quis_id') != null) {
-            $iTbl = QuizStudent::orderBy('name_quiz');
-            $iTbl = $iTbl->join('quiz', 'quiz.id', '=', 'quiz_student.quiz_id');
-            // $iTbl = $iTbl->join('class_room', 'class_room.id', '=', 'quiz_student.class_room_id');
-            $iTbl = $iTbl->join('student', 'student.id', '=', 'quiz.student_id');
+        if(request('quiz_id') != null && request('class_room_id') != null) {
+            $iTbl = QuizStudent::select('quiz_student.*', 'student.name_student', 'quiz.name_quiz', 'class_room.name_class_room')
+                                ->orderBy('quiz.name_quiz');
+            $iTbl = $iTbl->leftJoin('quiz', 'quiz.id', '=', 'quiz_student.quiz_id');
+            $iTbl = $iTbl->leftJoin('class_room', 'class_room.id', '=', 'quiz_student.class_room_id');
+            $iTbl = $iTbl->leftJoin('student', 'student.id', '=', 'quiz_student.student_id');
+
+            $iTbl = $iTbl->where(['quiz_id' => request('quiz_id'), 'class_room_id' => request('class_room_id')]);
 
             if(request("search") != null) {
-                //FILTER BELUM BERHASIL
-                $iTbl = $iTbl->where('is_deleted', 0)
+                $iTbl = $iTbl->where('quiz_student.is_deleted', 0)
                             // ->where('name_class_room', 'like', '%'.request('search').'%')
-                            ->where('name_student', 'like', '%'.request('search').'%')
-                            ->orWhere('name_quiz', 'like', '%'.request('search').'%');
+                            ->where('name_student', 'like', '%'.request('search').'%');
             }
 
-            $data = $iTbl->where('quiz.is_deleted', 0)->skip(request('offset'))->take(request('limit'))->get();
+            $data = $iTbl->where('quiz_student.is_deleted', 0)->skip(request('offset'))->take(request('limit'))->get();
             $total = $iTbl->count();
 
             $data = $data->map(function($row) {
-                $row->absens = DB::table('absen')->where('quiz_id', $row->id)->get();
+                $row->absens = DB::table('absen')->where('quiz_student_id', $row->id)->get();
 
                 return $row;
             });
@@ -63,10 +64,9 @@ class QuizStudentController extends Controller
         $iTbl = $iTbl->join('student', 'student.id', '=', 'quiz.student_id');
 
         if(request("search") != null) {
-           $iTbl = $iTbl->where('is_deleted', 0)
+            $iTbl = $iTbl->where('quiz_student.is_deleted', 0)
                         // ->where('name_class_room', 'like', '%'.request('search').'%')
-                        ->where('name_student', 'like', '%'.request('search').'%')
-                        ->orWhere('name_quiz', 'like', '%'.request('search').'%');
+                        ->where('name_student', 'like', '%'.request('search').'%');
         }
 
         $iTbl = $iTbl->where('is_deleted', 0)->get();

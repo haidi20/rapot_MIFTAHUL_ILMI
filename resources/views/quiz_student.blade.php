@@ -24,7 +24,7 @@
 @section('content')
     <div class="page-body">
         <div class="row">
-            <div class="col-sm-12 col-md-4">
+            <div class="col-sm-12 col-md-3">
                 <div class="card">
                     <div class="card-body">
                         {{-- <h5>Masukkan Data Murid</h5> --}}
@@ -41,7 +41,7 @@
                                     <div class="form-group row">
                                         <div class="col-sm-12 col-md-12">
                                             <label class="block"> Kelas </label>
-                                            <select name="class_room_id" class="form-control form-control-inverse">
+                                            <select name="class_room_id" id="class_room_id" class="form-control form-control-inverse">
                                                 <option value="">Pilih Kelas</option>
                                                 @foreach ($classRoom as $index => $item )
                                                     <option
@@ -55,7 +55,7 @@
                                     <div class="form-group row">
                                         <div class="col-sm-12 col-md-12">
                                             <label class="block"> Kuis </label>
-                                            <select name="quiz_id" class="form-control form-control-inverse">
+                                            <select name="quiz_id" id="quiz_id" class="form-control form-control-inverse">
                                                 <option value="">Pilih Kuis</option>
                                                 @foreach ($quiz as $index => $item )
                                                     <option
@@ -83,10 +83,10 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-12 col-md-8">
+            <div class="col-sm-12 col-md-9">
                 <div class="row">
-                    {!! session()->get('message') !!}
                     <div class="col-md-12">
+                        {!! session()->get('message') !!}
                         <div class="card">
                             <div class="card-body">
                                 <div class="form-group row">
@@ -104,7 +104,15 @@
                                     </div>
                                     <div class="col-sm-12 col-md-4">
                                         <label class="block"> Kuis </label>
-                                        <select name="class_room_id" id="filter_quiz" class="form-control form-control-inverse"></select>
+                                        <select name="filter_quiz_id" id="filter_quiz" class="form-control form-control-inverse">
+                                            <option value="">Pilih Kuis</option>
+                                            @foreach ($quiz as $index => $item )
+                                                <option
+                                                    value="{{$item->id}}">
+                                                    {{$item->name_quiz}}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                     <div class="col-sm-12 col-md-3">
                                         <button type="button" class="btn btn-sm btn-success btn-filter" onclick="sendFilter()">Pilih</button>
@@ -140,106 +148,63 @@
             countFormStudent: 1,
             dataStudent: [],
             quiz_id: '',
+            class_room_id: '',
         }
 
         var data = [];
         var form = $('#form');
         var btnSave = $('#btnSave');
-        var filterQuiz = $('#filter_quiz');
         var nameClassRoom = $('#name_quiz');
         var firstStudent = $('#first_student');
         var multiStudent = $('.multi-student');
         var quizStudentTable = $('#quiz_student');
 
+        var filterQuiz = $('#filter_quiz');
+        var filterClass = $('#filter_class');
+
         $(document).ready(function() {
             readData();
             loadDataStudent();
-            selectFilterClassRoom();
-            selectFilterQuiz();
 
             $('.select2').select2();
         });
 
-        function edit(index) {
-            data = quizStudentTable.bootstrapTable('getData');
-            form.attr('action', $('#edit_'+index).attr('data-link'));
-
-            nameClassRoom.val(data[index].name_quiz);
-        }
-
-        // function remove(index) {
+        // function edit(index) {
         //     data = quizStudentTable.bootstrapTable('getData');
+        //     form.attr('action', $('#edit_'+index).attr('data-link'));
 
-        //     Swal.fire({
-        //         title: 'Yakin hapus data kelas <b>'+data[index].name_quiz+'</b> ?',
-        //         showDenyButton: false,
-        //         icon: 'question',
-        //         showCancelButton: true,
-        //         confirmButtonText: `Delete`,
-        //         confirmButtonColor: 'red',
-        //     }).then((result) => {
-        //         /* Read more about isConfirmed, isDenied below */
-        //         if (result.isConfirmed) {
-        //             location.href = `{{url('quiz/delete')}}/${data[index].id}`;
-        //             // Swal.fire('Data terhapus!', '', 'success')
-        //         } else if (result.isDenied) {
-        //             Swal.fire('Data tidak dihapus', '', 'info');
-        //         }
-        //     });
+        //     nameClassRoom.val(data[index].name_quiz);
         // }
 
-        function selectFilterClassRoom() {
-            $('#filter_class').on('click', function(){
-                var classRoomId = $(this).val();
-                // console.log(classRoomId);
-                $.ajax({
-                    url: "{{url('/master/quiz/ajaxReadTypeahead')}}",
-                    dataType: "JSON",
-                    contentType: "application/json",
-                    type: "GET",
-                    success: function (result) {
-                        filterQuiz.empty();
+        function remove(index) {
+            data = quizStudentTable.bootstrapTable('getData');
 
-                        var optionNewFormStudent = '';
-                        state.dataStudent = result.data;
-
-                        console.log(result);
-
-                        optionNewFormStudent += '<option> Pilih Kuis </option>';
-                        if (result.data[0]) {
-                            $.each(result.data, function(index, item) {
-                                optionNewFormStudent += '<option value="'+item.id+'"> '+item.name_quiz+' </option>';
-                            });
-                        }
-                        filterQuiz.prepend(optionNewFormStudent);
-                    },
-                    error: function (error) {
-                        // Swal.fire({
-                        //     type: 'error',
-                        //     title: 'Oops... Error...',
-                        //     html: "Maaf, gagal mendapatkan data peserta",
-                        // });
-
-                        console.log(error);
-                    }
-                });
-            });
-        }
-
-        function selectFilterQuiz() {
-            $('#filter_quiz').on('click', function() {
-                state.quiz_id = $(this).val();
-
-                console.log(state.quiz_id);
+            Swal.fire({
+                title: 'Yakin hapus peserta <b>'+data[index].name_student+'</b> di kelas <b>'+data[index].name_class_room+'</b> dan <b>'+data[index].name_quiz+'</b> ?',
+                showDenyButton: false,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: `Delete`,
+                confirmButtonColor: 'red',
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    location.href = `{{url('quiz-student/delete')}}/${data[index].id}`;
+                    // Swal.fire('Data terhapus!', '', 'success')
+                } else if (result.isDenied) {
+                    Swal.fire('Data tidak dihapus', '', 'info');
+                }
             });
         }
 
         function sendFilter() {
-            console.log(state.quiz_id);
+            state.quiz_id = filterQuiz.val();
+            state.class_room_id = filterClass.val();
             // quizStudentTable.bootstrapTable('refresh');
 
+            console.log(state.quiz_id);
             quizStudentTable.bootstrapTable('refresh');
-            readData();
+            // readData();
         }
 
         function readData() {
@@ -257,6 +222,7 @@
                 sortable: true,
                 queryParams: function(params) {
                     params.quiz_id = state.quiz_id;
+                    params.class_room_id = state.class_room_id;
 
                     return params;
                 },
