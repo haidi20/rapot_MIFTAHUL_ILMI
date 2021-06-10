@@ -69,4 +69,8 @@
     .fas {
         color: white;
     }
+
+    .pcoded-inner-content {
+        height: 100vh;
+    }
 </style>

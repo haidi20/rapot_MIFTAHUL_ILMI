@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ClassRoom;
 use App\Models\Quiz;
+use App\Models\Student;
 use App\Models\QuizStudent;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -15,9 +16,10 @@ class QuizStudentController extends Controller
     public function index() {
         $action = route('quizStudent.store');
         $quiz = Quiz::where('is_deleted', 0)->get();
+        $student = Student::where('is_deleted', 0)->get();
         $classRoom = ClassRoom::where('is_deleted', 0)->get();
 
-        return view('quiz_student', compact('action', 'classRoom', 'quiz'));
+        return view('quiz_student', compact('action', 'classRoom', 'quiz', 'student'));
     }
 
     public function ajaxRead() {

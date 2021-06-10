@@ -1,9 +1,15 @@
 @extends('layouts.appLayout')
 
 @section('style')
+    <!-- select2 css -->
     <link rel="stylesheet" href="{{asset('adminty/files/bower_components/select2/css/select2.min.css')}}"/>
+    <!-- Date-time picker css -->
+    <link rel="stylesheet" type="text/css" href="{{asset('adminty/files/assets/pages/advance-elements/css/bootstrap-datetimepicker.css')}}">
     {{-- <link rel="stylesheet" type="text/css" href="{{asset('adminty/files/assets/icon/font-awesome/css/font-awesome.min.css')}}"> --}}
     <style>
+        .bootstrap-table .fixed-table-container .table thead th {
+            vertical-align: middle;
+        }
         .custom-form {
             margin-top: 50px;
         }
@@ -18,6 +24,17 @@
         .btn-filter {
             margin-top: 30px;
         }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            padding: 0px;
+            padding-left: 10px;
+            color: white;
+            /* height: calc(2.25rem + 2px); */
+        }
+        .form-date-absen {
+            width: 100px;
+        }
+
+
     </style>
 @endsection
 
@@ -69,7 +86,15 @@
                                     <div class="form-group row multi-student">
                                         <div class="col-sm-12 col-md-12">
                                             <label class="block"> Peserta </label>
-                                            <select name="students[]" id="first_student" class="form-control .select2 form-student"></select>
+                                            <select name="students[]" id="first_student" class=" form-control select2 form-student">
+                                                <option value="">Pilih Peserta</option>
+                                                @foreach ($student as $index => $item )
+                                                    <option
+                                                        value="{{$item->id}}">
+                                                        {{$item->name_student}}
+                                                    </option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -129,7 +154,32 @@
                             <div class="card-body">
                                 <h5> Pengisian Raport </h5>
 
-                                <table id="quiz_student"></table>
+                                <table id="quiz_student">
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2" data-width="20">Action</th>
+                                            <th rowspan="2" data-field="name_student">Nama Peserta</th>
+                                            <th colspan="4" data-align="center">Pertemuan</th>
+                                            <th rowspan="2" data-width="30" data-field="value">Nilai</th>
+                                            <th rowspan="2" data-width="30" data-field="grade">Grade</th>
+                                            <th rowspan="2" data-width="30" data-field="note">Catatan</th>
+                                        </tr>
+                                        <tr>
+                                            <th data-width="100">
+                                                <input type="text" name="date_absen[]" class="form-control form-date-absen">
+                                            </th>
+                                            <th data-width="100">
+                                                <input type="text" name="date_absen[]" class="form-control form-date-absen">
+                                            </th>
+                                            <th data-width="100">
+                                                <input type="text" name="date_absen[]" class="form-control form-date-absen">
+                                            </th>
+                                            <th data-width="100">
+                                                <input type="text" name="date_absen[]" class="form-control form-date-absen">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -143,6 +193,10 @@
 @section('script')
     <!-- Select 2 js -->
     <script type="text/javascript" src="{{asset('adminty/files/bower_components/select2/js/select2.full.min.js')}}"></script>
+    <!-- Bootstrap date-time-picker js -->
+    <script type="text/javascript" src="{{asset('adminty/files/bower_components/bootstrap-datepicker/js/bootstrap-datepicker.min.js')}}"></script>
+    <script type="text/javascript" src="{{asset('adminty/files/assets/pages/advance-elements/moment-with-locales.min.js')}}"></script>
+    <script type="text/javascript" src="{{asset('adminty/files/assets/pages/advance-elements/bootstrap-datetimepicker.min.js')}}"></script>
     <script>
         var state = {
             countFormStudent: 1,
@@ -167,6 +221,19 @@
             loadDataStudent();
 
             $('.select2').select2();
+            // Using Locales
+            $('.form-date-absen').datetimepicker({
+                locale: 'id',
+                format:'DD/MM',
+                icons: {
+                    time: "icofont icofont-clock-time",
+                    date: "icofont icofont-ui-calendar",
+                    up: "icofont icofont-rounded-up",
+                    down: "icofont icofont-rounded-down",
+                    next: "icofont icofont-rounded-right",
+                    previous: "icofont icofont-rounded-left"
+                }
+            });
         });
 
         // function edit(index) {
@@ -200,11 +267,8 @@
         function sendFilter() {
             state.quiz_id = filterQuiz.val();
             state.class_room_id = filterClass.val();
-            // quizStudentTable.bootstrapTable('refresh');
 
-            console.log(state.quiz_id);
             quizStudentTable.bootstrapTable('refresh');
-            // readData();
         }
 
         function readData() {
@@ -227,23 +291,27 @@
                     return params;
                 },
                 //idField: 'NRP',
-                columns: [
-                    {
-                        width: 10,
-                        title: 'Action',
-                        formatter: function (value, row, index) {
-                            var str = '';
-                            // str += `<a type="button" id="edit_${index}" data-link="{{url('quiz-student/update')}}/${row.id}" onclick="edit('${index}')" class="btn btn-info btn-xsm"><i class="fas fa-pencil-alt"></i></i></a> &nbsp;`;
-                            str += `<a type="button" id="remove_${index}" data-link="{{url('quiz-student/delete')}}/${row.id}" onclick="remove('${index}')" class="btn btn-danger btn-xsm"><i class="fas fa-trash"></i></a>`;
+                // columns: [
+                //     {
+                //         width: 10,
+                //         title: 'Action',
+                //         formatter: function (value, row, index) {
+                //             var str = '';
+                //             // str += `<a type="button" id="edit_${index}" data-link="{{url('quiz-student/update')}}/${row.id}" onclick="edit('${index}')" class="btn btn-info btn-xsm"><i class="fas fa-pencil-alt"></i></i></a> &nbsp;`;
+                //             str += `<a type="button" id="remove_${index}" data-link="{{url('quiz-student/delete')}}/${row.id}" onclick="remove('${index}')" class="btn btn-danger btn-xsm"><i class="fas fa-trash"></i></a>`;
 
-                            return str;
-                        },
-                    },
-                    {
-                        field: 'name_student',
-                        title: 'Nama Peserta',
-                    },
-                ]
+                //             return str;
+                //         },
+                //     },
+                //     {
+                //         field: 'name_student',
+                //         title: 'Nama Peserta',
+                //     },
+                //     {
+                //         title: 'Pertemuan',
+                //         rowspan: 2,
+                //     },
+                // ]
             });
         }
 
@@ -258,12 +326,12 @@
                         var optionNewFormStudent = '';
                         state.dataStudent = result.data;
 
-                        optionNewFormStudent += '<option> Pilih Peserta </option>';
-                        $.each(state.dataStudent, function(index, item) {
-                            optionNewFormStudent += '<option value="'+item.id+'"> '+item.name_student+' </option>';
-                        });
+                        // optionNewFormStudent += '<option> Pilih Peserta </option>';
+                        // $.each(state.dataStudent, function(index, item) {
+                        //     optionNewFormStudent += '<option value="'+item.id+'"> '+item.name_student+' </option>';
+                        // });
 
-                        firstStudent.prepend(optionNewFormStudent);
+                        // firstStudent.prepend(optionNewFormStudent);
                     }
                 },
                 error: function (error) {
