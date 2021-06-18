@@ -71,6 +71,6 @@
     }
 
     .pcoded-inner-content {
-        height: 100vh;
+        /* height: 100vh; */
     }
 </style>

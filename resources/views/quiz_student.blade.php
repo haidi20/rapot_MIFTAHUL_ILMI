@@ -18,8 +18,8 @@
             display: inline-block;
         }
         .btn-delete-student {
-            margin-left: 5px;
-            display: inline-block;
+            float: right;
+            cursor: pointer;
         }
         .btn-filter {
             margin-top: 30px;
@@ -30,9 +30,9 @@
             color: white;
             /* height: calc(2.25rem + 2px); */
         }
-        .form-date-absen {
+        /* .form-date-absen {
             width: 100px;
-        }
+        } */
 
 
     </style>
@@ -58,7 +58,7 @@
                                     <div class="form-group row">
                                         <div class="col-sm-12 col-md-12">
                                             <label class="block"> Kelas </label>
-                                            <select name="class_room_id" id="class_room_id" class="form-control form-control-inverse">
+                                            <select name="class_room_id" id="class_room_id" class="form-control select2 form-control-inverse">
                                                 <option value="">Pilih Kelas</option>
                                                 @foreach ($classRoom as $index => $item )
                                                     <option
@@ -72,7 +72,7 @@
                                     <div class="form-group row">
                                         <div class="col-sm-12 col-md-12">
                                             <label class="block"> Kuis </label>
-                                            <select name="quiz_id" id="quiz_id" class="form-control form-control-inverse">
+                                            <select name="quiz_id" id="quiz_id" class="form-control select2 form-control-inverse">
                                                 <option value="">Pilih Kuis</option>
                                                 @foreach ($quiz as $index => $item )
                                                     <option
@@ -83,6 +83,31 @@
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-12 col-md-12">
+                                            <label class="block"> Pertemuan 1 </label>
+                                            <input type="text" name="date_absen[]" class="form-control form-date-absen">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-12 col-md-12">
+                                            <label class="block"> Pertemuan 2 </label>
+                                            <input type="text" name="date_absen[]" class="form-control form-date-absen">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-12 col-md-12">
+                                            <label class="block"> Pertemuan 3 </label>
+                                            <input type="text" name="date_absen[]" class="form-control form-date-absen">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-12 col-md-12">
+                                            <label class="block"> Pertemuan 4 </label>
+                                            <input type="text" name="date_absen[]" class="form-control form-date-absen">
+                                        </div>
+                                    </div>
+                                    {{-- <div class="multi-student"></div> --}}
                                     <div class="form-group row multi-student">
                                         <div class="col-sm-12 col-md-12">
                                             <label class="block"> Peserta </label>
@@ -165,18 +190,10 @@
                                             <th rowspan="2" data-width="30" data-field="note">Catatan</th>
                                         </tr>
                                         <tr>
-                                            <th data-width="100">
-                                                <input type="text" name="date_absen[]" class="form-control form-date-absen">
-                                            </th>
-                                            <th data-width="100">
-                                                <input type="text" name="date_absen[]" class="form-control form-date-absen">
-                                            </th>
-                                            <th data-width="100">
-                                                <input type="text" name="date_absen[]" class="form-control form-date-absen">
-                                            </th>
-                                            <th data-width="100">
-                                                <input type="text" name="date_absen[]" class="form-control form-date-absen">
-                                            </th>
+                                            <th data-width="100" data-align="center">1/2</th>
+                                            <th data-width="100" data-align="center">8/2</th>
+                                            <th data-width="100" data-align="center">15/2</th>
+                                            <th data-width="100" data-align="center">22/3</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -359,17 +376,19 @@
 
             newFormStudent += '<div class="form-group row multi-student" id="form_student_'+countFormStudent+'">';
                 newFormStudent +='<div class="col-sm-12 col-md-12">';
-                    newFormStudent +='<label class="block"> Pilih Peserta </label>';
-                    newFormStudent +='<select name="students[]" class="form-control form-control-inverse form-select-student form-student">';
+                    newFormStudent +='<label class="block"> Pilih Peserta </label> <i onclick="removeFormStudent('+countFormStudent+')" class="fas fa-close text-danger btn-delete-student"></i>';
+                    newFormStudent +='<select name="students[]" class="form-control select2 form-control-inverse">';
                         newFormStudent += optionNewFormStudent;
                     newFormStudent +='</select>';
-                    newFormStudent +='<button type="submit" class="btn btn-sm btn-danger btn-delete-student" onclick="removeFormStudent('+countFormStudent+')">';
-                        newFormStudent += '<i class="fas fa-close"></i>';
-                    newFormStudent +='</button>';
+                    // newFormStudent +='<button type="submit" class="btn btn-sm btn-danger btn-delete-student" onclick="removeFormStudent('+countFormStudent+')">';
+                    //     newFormStudent += '<i class="fas fa-close"></i>';
+                    // newFormStudent +='</button>';
                 newFormStudent +='</div>';
             newFormStudent +='</div>';
 
             multiStudent.after(newFormStudent);
+
+            $('.select2').select2();
         }
 
         function removeFormStudent(index) {

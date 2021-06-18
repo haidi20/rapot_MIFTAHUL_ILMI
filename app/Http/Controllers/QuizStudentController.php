@@ -79,21 +79,41 @@ class QuizStudentController extends Controller
     public function store() {
         // return request()->all();
 
-        try {
-            DB::beginTransaction();
+        // try {
+        //     DB::beginTransaction();
 
-           foreach(request('students') as $index => $item) {
+            foreach(request('students') as $index => $item) {
                 $quizStudent = DB::table("quiz_student");
                 $id = (string) Uuid::generate();
 
                 $quizStudent->insert(array(
                     "id" => $id,
+                    "quiz_id" => request('quiz_id'),
                     "class_room_id" => request('class_room_id'),
                     "student_id" => $item,
-                    "quiz_id" => request('quiz_id'),
                     "created_at" => Carbon::now(),
                 ));
-           }
+            }
+
+            foreach(request('date_absen') as $index => $item) {
+                $quizDate = DB::table("quiz_date");
+                $id = (string) Uuid::generate();
+                $dateNow = Carbon::now();
+
+                $dateMonthArray = explode('/', $item);
+                $day = $dateMonthArray[0];
+                $month = $dateMonthArray[1];
+
+                $date = Carbon::createFromDate($dateNow->format('Y'), $month, $day);
+
+                $quizDate->insert(array(
+                    "id" => $id,
+                    "quiz_id" => request('quiz_id'),
+                    "class_room_id" => request('class_room_id'),
+                    "date" => $date,
+                    "created_at" => Carbon::now(),
+                ));
+            }
 
             // foreach (request('students') as $index => $item) {
             //     $absen = DB::table('absen');
@@ -105,16 +125,16 @@ class QuizStudentController extends Controller
             //     ));
             // }
 
-            flash_message('message', 'success', 'check', 'Data telah dibuat');
+        //     flash_message('message', 'success', 'check', 'Data telah dibuat');
 
-            DB::commit();
-            // all good
-        } catch (\Exception $e) {
-            DB::rollback();
-            // something went wrong
+        //     DB::commit();
+        //     // all good
+        // } catch (\Exception $e) {
+        //     DB::rollback();
+        //     // something went wrong
 
-            flash_message('message', 'danger', 'close', 'Data gagal di dibuat');
-        }
+        //     flash_message('message', 'danger', 'close', 'Data gagal di dibuat');
+        // }
 
         return redirect()->route('quizStudent');
     }
