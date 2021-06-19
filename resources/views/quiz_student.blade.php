@@ -182,18 +182,15 @@
                                 <table id="quiz_student">
                                     <thead>
                                         <tr>
-                                            <th rowspan="2" data-width="20">Action</th>
+                                            <th rowspan="2" data-width="20" data-formatter="actionFormatter">Action</th>
                                             <th rowspan="2" data-field="name_student">Nama Peserta</th>
                                             <th colspan="4" data-align="center">Pertemuan</th>
                                             <th rowspan="2" data-width="30" data-field="value">Nilai</th>
                                             <th rowspan="2" data-width="30" data-field="grade">Grade</th>
                                             <th rowspan="2" data-width="30" data-field="note">Catatan</th>
                                         </tr>
-                                        <tr>
-                                            <th data-width="100" data-align="center">1/2</th>
-                                            <th data-width="100" data-align="center">8/2</th>
-                                            <th data-width="100" data-align="center">15/2</th>
-                                            <th data-width="100" data-align="center">22/3</th>
+                                        <tr id="dateAbsen">
+                                            {{-- <th data-width="100" data-align="center">1/2</th> --}}
                                         </tr>
                                     </thead>
                                 </table>
@@ -253,34 +250,6 @@
             });
         });
 
-        // function edit(index) {
-        //     data = quizStudentTable.bootstrapTable('getData');
-        //     form.attr('action', $('#edit_'+index).attr('data-link'));
-
-        //     nameClassRoom.val(data[index].name_quiz);
-        // }
-
-        function remove(index) {
-            data = quizStudentTable.bootstrapTable('getData');
-
-            Swal.fire({
-                title: 'Yakin hapus peserta <b>'+data[index].name_student+'</b> di kelas <b>'+data[index].name_class_room+'</b> dan <b>'+data[index].name_quiz+'</b> ?',
-                showDenyButton: false,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: `Delete`,
-                confirmButtonColor: 'red',
-            }).then((result) => {
-                /* Read more about isConfirmed, isDenied below */
-                if (result.isConfirmed) {
-                    location.href = `{{url('quiz-student/delete')}}/${data[index].id}`;
-                    // Swal.fire('Data terhapus!', '', 'success')
-                } else if (result.isDenied) {
-                    Swal.fire('Data tidak dihapus', '', 'info');
-                }
-            });
-        }
-
         function sendFilter() {
             state.quiz_id = filterQuiz.val();
             state.class_room_id = filterClass.val();
@@ -331,6 +300,43 @@
                 // ]
             });
         }
+
+        function actionFormatter(value, row, index) {
+            var str = '';
+            str += `<a type="button" id="edit_${index}" data-link="{{url('quiz-student/update')}}/${row.id}" onclick="edit('${index}')" class="btn btn-info btn-xsm"><i class="fas fa-pencil-alt"></i></i></a> &nbsp;`;
+            // str += `<a type="button" id="remove_${index}" data-link="{{url('quiz-student/delete')}}/${row.id}" onclick="remove('${index}')" class="btn btn-danger btn-xsm"><i class="fas fa-trash"></i></a>`;
+
+            return str;
+        }
+
+        function edit(index) {
+            console.log(index);
+            // data = quizStudentTable.bootstrapTable('getData');
+            // form.attr('action', $('#edit_'+index).attr('data-link'));
+
+            // nameClassRoom.val(data[index].name_quiz);
+        }
+
+        // function remove(index) {
+        //     data = quizStudentTable.bootstrapTable('getData');
+
+        //     Swal.fire({
+        //         title: 'Yakin hapus peserta <b>'+data[index].name_student+'</b> di kelas <b>'+data[index].name_class_room+'</b> dan <b>'+data[index].name_quiz+'</b> ?',
+        //         showDenyButton: false,
+        //         icon: 'question',
+        //         showCancelButton: true,
+        //         confirmButtonText: `Delete`,
+        //         confirmButtonColor: 'red',
+        //     }).then((result) => {
+        //         /* Read more about isConfirmed, isDenied below */
+        //         if (result.isConfirmed) {
+        //             location.href = `{{url('quiz-student/delete')}}/${data[index].id}`;
+        //             // Swal.fire('Data terhapus!', '', 'success')
+        //         } else if (result.isDenied) {
+        //             Swal.fire('Data tidak dihapus', '', 'info');
+        //         }
+        //     });
+        // }
 
         function loadDataStudent() {
             $.ajax({

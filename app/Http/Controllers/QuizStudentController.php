@@ -76,6 +76,10 @@ class QuizStudentController extends Controller
         return response()->json( ["data" => $iTbl]);
     }
 
+    public function ajaxReadDateAbsen() {
+        // show data date absen
+    }
+
     public function store() {
         // return request()->all();
 
@@ -95,35 +99,32 @@ class QuizStudentController extends Controller
                 ));
             }
 
-            foreach(request('date_absen') as $index => $item) {
-                $quizDate = DB::table("quiz_date");
-                $id = (string) Uuid::generate();
-                $dateNow = Carbon::now();
-
-                $dateMonthArray = explode('/', $item);
-                $day = $dateMonthArray[0];
-                $month = $dateMonthArray[1];
-
-                $date = Carbon::createFromDate($dateNow->format('Y'), $month, $day);
-
-                $quizDate->insert(array(
-                    "id" => $id,
-                    "quiz_id" => request('quiz_id'),
-                    "class_room_id" => request('class_room_id'),
-                    "date" => $date,
-                    "created_at" => Carbon::now(),
-                ));
+            if(request('date_absen') != null) {
+                foreach(request('date_absen') as $index => $item) {
+                    $date = $this->getDateAbsen($item);
+    
+                    $foundQuizDate = DB::table("quiz_date")->where(['quiz_id' => request('quiz_id'), 'class_room_id' => request('class_room_id')]);
+                    $checkDataQuizDate = $foundQuizDate->count();
+    
+                    if($checkDataQuizDate > 0) {
+                            $foundQuizDate->update(array(
+                                "date" => $date,
+                                "updated_at" => Carbon::now(),
+                            ));
+                    }else {
+                        $id = (string) Uuid::generate();
+    
+                        DB::table("quiz_date")
+                            ->insert(array(
+                                "id" => $id,
+                                "quiz_id" => request('quiz_id'),
+                                "class_room_id" => request('class_room_id'),
+                                "date" => $date,
+                                "created_at" => Carbon::now(),
+                            ));
+                    }
+                }
             }
-
-            // foreach (request('students') as $index => $item) {
-            //     $absen = DB::table('absen');
-            //     $absen->insert(array(
-            //         "id" => $idAbsen,
-            //         "quiz_id" => $id,
-            //         "student_id" => $item,
-            //         "created_at" => Carbon::now(),
-            //     ));
-            // }
 
         //     flash_message('message', 'success', 'check', 'Data telah dibuat');
 
@@ -170,5 +171,18 @@ class QuizStudentController extends Controller
 
         flash_message('message', 'success', 'check', 'Data telah dihapus');
         return redirect()->route('quizStudent');
+    }
+
+    // helper local
+    private function getDateAbsen($data) {
+        $dateNow = Carbon::now();
+
+        $dateMonthArray = explode('/', $data);
+        $day = $dateMonthArray[0];
+        $month = $dateMonthArray[1];
+
+        $date = Carbon::createFromDate($dateNow->format('Y'), $month, $day);
+
+        return $date;
     }
 }

@@ -58,6 +58,7 @@ Route::group(['prefix' => 'quiz-student'], function() {
     Route::get('', 'QuizStudentController@index')->name("quizStudent");
     Route::get('ajaxRead', 'QuizStudentController@ajaxRead');
     Route::get('ajaxReadTypeahead', 'QuizStudentController@ajaxReadTypeahead');
+    Route::get('ajaxReadDateAbsen', 'QuizStudentController@ajaxReadDateAbsen');
     Route::post('store', 'QuizStudentController@store')->name('quizStudent.store');
     // Route::post('update/{id}', 'QuizStudentController@update')->name('quizStudent.update');
     Route::get('delete/{id}', 'QuizStudentController@delete')->name('quizStudent.delete');
