@@ -30,6 +30,10 @@
             color: white;
             /* height: calc(2.25rem + 2px); */
         }
+
+        .form-absen-type {
+            padding: 0px;
+        }
         /* .form-date-absen {
             width: 100px;
         } */
@@ -183,14 +187,17 @@
                                     <thead>
                                         <tr>
                                             <th rowspan="2" data-width="20" data-formatter="actionFormatter">Action</th>
-                                            <th rowspan="2" data-field="name_student">Nama Peserta</th>
+                                            <th rowspan="2"  data-width="50" data-field="name_student">Nama Peserta</th>
                                             <th colspan="4" data-align="center">Pertemuan</th>
                                             <th rowspan="2" data-width="30" data-field="value">Nilai</th>
                                             <th rowspan="2" data-width="30" data-field="grade">Grade</th>
                                             <th rowspan="2" data-width="30" data-field="note">Catatan</th>
                                         </tr>
-                                        <tr id="dateAbsen">
-                                            {{-- <th data-width="100" data-align="center">1/2</th> --}}
+                                        <tr data="date_absen">
+                                            <th data-width="30" data-align="center" data-formatter="valueAbsenFormatter">-</th>
+                                            <th data-width="30" data-align="center" data-formatter="valueAbsenFormatter">-</th>
+                                            <th data-width="30" data-align="center" data-formatter="valueAbsenFormatter">-</th>
+                                            <th data-width="30" data-align="center" data-formatter="valueAbsenFormatter">-</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -215,17 +222,22 @@
         var state = {
             countFormStudent: 1,
             dataStudent: [],
+            dataQuizStudent: [],
+            dataQuizDate: [],
+            indexQuizDate: 0,
             quiz_id: '',
             class_room_id: '',
+            date_absen: [],
+            dataAbsenType: [],
         }
 
         var data = [];
+        var quizStudentTable = $('#quiz_student');
         var form = $('#form');
         var btnSave = $('#btnSave');
         var nameClassRoom = $('#name_quiz');
         var firstStudent = $('#first_student');
         var multiStudent = $('.multi-student');
-        var quizStudentTable = $('#quiz_student');
 
         var filterQuiz = $('#filter_quiz');
         var filterClass = $('#filter_class');
@@ -233,21 +245,11 @@
         $(document).ready(function() {
             readData();
             loadDataStudent();
+            loadDataAbsenType();
 
             $('.select2').select2();
             // Using Locales
-            $('.form-date-absen').datetimepicker({
-                locale: 'id',
-                format:'DD/MM',
-                icons: {
-                    time: "icofont icofont-clock-time",
-                    date: "icofont icofont-ui-calendar",
-                    up: "icofont icofont-rounded-up",
-                    down: "icofont icofont-rounded-down",
-                    next: "icofont icofont-rounded-right",
-                    previous: "icofont icofont-rounded-left"
-                }
-            });
+
         });
 
         function sendFilter() {
@@ -276,28 +278,23 @@
 
                     return params;
                 },
-                //idField: 'NRP',
-                // columns: [
-                //     {
-                //         width: 10,
-                //         title: 'Action',
-                //         formatter: function (value, row, index) {
-                //             var str = '';
-                //             // str += `<a type="button" id="edit_${index}" data-link="{{url('quiz-student/update')}}/${row.id}" onclick="edit('${index}')" class="btn btn-info btn-xsm"><i class="fas fa-pencil-alt"></i></i></a> &nbsp;`;
-                //             str += `<a type="button" id="remove_${index}" data-link="{{url('quiz-student/delete')}}/${row.id}" onclick="remove('${index}')" class="btn btn-danger btn-xsm"><i class="fas fa-trash"></i></a>`;
+                onLoadSuccess: function(data) {
+                    console.log('success');
+                    var listDateAbsen = '';
 
-                //             return str;
-                //         },
-                //     },
-                //     {
-                //         field: 'name_student',
-                //         title: 'Nama Peserta',
-                //     },
-                //     {
-                //         title: 'Pertemuan',
-                //         rowspan: 2,
-                //     },
-                // ]
+                    state.dataQuizStudent = data.rows;
+                    state.dataQuizDate = data.quizDate;
+
+                    if(data.quizDate.length > 0) {
+                        quizStudentTable.find('thead > tr:nth-child(2)').empty();
+
+                        $.each(data.quizDate, function(index, item){
+                            listDateAbsen += '<th data-width="100" data-align="center" style="text-align:center">'+moment(item.date).format("MM/DD")+'</th>';
+                        });
+
+                        quizStudentTable.find('thead > tr:nth-child(2)').prepend(listDateAbsen);
+                    }
+                },
             });
         }
 
@@ -309,6 +306,64 @@
             return str;
         }
 
+        function valueAbsenFormatter(value, row, index) {
+            var selectAbsenType = '';
+            var optionAbsenType = '';
+            var childOptionAbsenType = '';
+            var quiz_student_id = row.id;
+            var student_id = row.student_id;
+
+            optionAbsenType += '<option ></option>'
+            $.each(state.dataAbsenType, function(index, item) {
+                optionAbsenType += '<option value="'+item.id+'"> '+item.name_absen_type+' </option>';
+            });
+
+
+            childOptionAbsenType += `onchange="chooseAbsenType(this.value, '${quiz_student_id}', '${student_id}', '${state.indexQuizDate}')"`;
+
+            state.indexQuizDate = state.indexQuizDate == 3 ? 0 : state.indexQuizDate + 1;
+
+            selectAbsenType +='<select name="value_date_absen[]"  '+childOptionAbsenType+' class="form-control form-absen-type">';
+                selectAbsenType += optionAbsenType;
+            selectAbsenType +='</select>';
+
+            // console.log(state.indexQuizDate);
+
+            return selectAbsenType;
+        }
+
+        function chooseAbsenType(value, quiz_student_id, student_id, indexQuizDate) {
+            // console.log(value, quiz_student_id, student_id);
+
+            var findIndex = state.dataQuizStudent.findIndex(item => item.student_id == student_id);
+            var findDataQuizStudent = state.dataQuizStudent[findIndex];
+            var findDataQuizDate = state.dataQuizDate[indexQuizDate];
+            var findIndexAbsen = findDataQuizStudent.absens.findIndex(item =>
+                                                                    item.student_id == student_id &&
+                                                                    item.date_absen == moment(findDataQuizDate.date).format('MM/DD')
+                                                                );
+
+            if(findIndexAbsen < 0) {
+                findDataQuizStudent.absens = [
+                    ...findDataQuizStudent.absens,
+                    {
+                        date_absen: moment(findDataQuizDate.date).format('MM/DD'),
+                        student_id: student_id,
+                        absen_type_id: value,
+                    },
+                ];
+            }else {
+                findDataQuizStudent.absens[findIndexAbsen] = {
+                    ...findDataQuizStudent.absens[findIndexAbsen],
+                    date_absen: moment(findDataQuizDate.date).format('MM/DD'),
+                    student_id: student_id,
+                    absen_type_id: value,
+                }
+            }
+
+            console.log(state.dataQuizStudent);
+        }
+
         function edit(index) {
             console.log(index);
             // data = quizStudentTable.bootstrapTable('getData');
@@ -316,27 +371,6 @@
 
             // nameClassRoom.val(data[index].name_quiz);
         }
-
-        // function remove(index) {
-        //     data = quizStudentTable.bootstrapTable('getData');
-
-        //     Swal.fire({
-        //         title: 'Yakin hapus peserta <b>'+data[index].name_student+'</b> di kelas <b>'+data[index].name_class_room+'</b> dan <b>'+data[index].name_quiz+'</b> ?',
-        //         showDenyButton: false,
-        //         icon: 'question',
-        //         showCancelButton: true,
-        //         confirmButtonText: `Delete`,
-        //         confirmButtonColor: 'red',
-        //     }).then((result) => {
-        //         /* Read more about isConfirmed, isDenied below */
-        //         if (result.isConfirmed) {
-        //             location.href = `{{url('quiz-student/delete')}}/${data[index].id}`;
-        //             // Swal.fire('Data terhapus!', '', 'success')
-        //         } else if (result.isDenied) {
-        //             Swal.fire('Data tidak dihapus', '', 'info');
-        //         }
-        //     });
-        // }
 
         function loadDataStudent() {
             $.ajax({
@@ -348,13 +382,6 @@
                     if (result.data) {
                         var optionNewFormStudent = '';
                         state.dataStudent = result.data;
-
-                        // optionNewFormStudent += '<option> Pilih Peserta </option>';
-                        // $.each(state.dataStudent, function(index, item) {
-                        //     optionNewFormStudent += '<option value="'+item.id+'"> '+item.name_student+' </option>';
-                        // });
-
-                        // firstStudent.prepend(optionNewFormStudent);
                     }
                 },
                 error: function (error) {
@@ -362,6 +389,29 @@
                         type: 'error',
                         title: 'Oops... Error...',
                         html: "Maaf, gagal mendapatkan data peserta",
+                    });
+
+                    console.log(error);
+                }
+            });
+        }
+
+        function loadDataAbsenType() {
+            $.ajax({
+                url: "{{url('master/absen-type/ajaxReadTypeahead')}}",
+                dataType: "JSON",
+                contentType: "application/json",
+                type: "GET",
+                success: function (result) {
+                    if (result.data) {
+                        state.dataAbsenType = result.data;
+                    }
+                },
+                error: function (error) {
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Oops... Error...',
+                        html: "Maaf, gagal mendapatkan data jenis absen",
                     });
 
                     console.log(error);
@@ -403,5 +453,26 @@
 
             $('#form_student_'+index).remove();
         }
+
+        // function remove(index) {
+        //     data = quizStudentTable.bootstrapTable('getData');
+
+        //     Swal.fire({
+        //         title: 'Yakin hapus peserta <b>'+data[index].name_student+'</b> di kelas <b>'+data[index].name_class_room+'</b> dan <b>'+data[index].name_quiz+'</b> ?',
+        //         showDenyButton: false,
+        //         icon: 'question',
+        //         showCancelButton: true,
+        //         confirmButtonText: `Delete`,
+        //         confirmButtonColor: 'red',
+        //     }).then((result) => {
+        //         /* Read more about isConfirmed, isDenied below */
+        //         if (result.isConfirmed) {
+        //             location.href = `{{url('quiz-student/delete')}}/${data[index].id}`;
+        //             // Swal.fire('Data terhapus!', '', 'success')
+        //         } else if (result.isDenied) {
+        //             Swal.fire('Data tidak dihapus', '', 'info');
+        //         }
+        //     });
+        // }
     </script>
 @endsection

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ClassRoom;
 use App\Models\Quiz;
+use App\Models\QuizDate;
 use App\Models\Student;
 use App\Models\QuizStudent;
 use Carbon\Carbon;
@@ -18,6 +19,7 @@ class QuizStudentController extends Controller
         $quiz = Quiz::where('is_deleted', 0)->get();
         $student = Student::where('is_deleted', 0)->get();
         $classRoom = ClassRoom::where('is_deleted', 0)->get();
+        // return $totalDataQuizStudent = QuizStudent::where('is_deleted', 0)->count();
 
         return view('quiz_student', compact('action', 'classRoom', 'quiz', 'student'));
     }
@@ -28,8 +30,10 @@ class QuizStudentController extends Controller
         $total = 0;
         $iTbl = (object) [];
         $data = [];
+        $quizDate = [];
 
         if(request('quiz_id') != null && request('class_room_id') != null) {
+            $quizDate = QuizDate::where(['quiz_id' => request('quiz_id'), 'class_room_id' => request('class_room_id')])->get();
             $iTbl = QuizStudent::select('quiz_student.*', 'student.name_student', 'quiz.name_quiz', 'class_room.name_class_room')
                                 ->orderBy('quiz.name_quiz');
             $iTbl = $iTbl->leftJoin('quiz', 'quiz.id', '=', 'quiz_student.quiz_id');
@@ -56,7 +60,11 @@ class QuizStudentController extends Controller
 
         // dd(DB::getQueryLog());
 
-        return response()->json( [ "rows" => $data, "data" => $iTbl, "total" => $total, "offset" => request('offset'), "limit" => request('limit'), "search" => request('search')]);
+        return response()->json([
+                                    "rows" => $data, "data" => $iTbl, "total" => $total,
+                                    "offset" => request('offset'), "limit" => request('limit'),
+                                    "search" => request('search'), "quizDate" => $quizDate,
+                                ]);
     }
 
     public function ajaxReadTypeahead() {
@@ -83,8 +91,8 @@ class QuizStudentController extends Controller
     public function store() {
         // return request()->all();
 
-        // try {
-        //     DB::beginTransaction();
+        try {
+            DB::beginTransaction();
 
             foreach(request('students') as $index => $item) {
                 $quizStudent = DB::table("quiz_student");
@@ -99,68 +107,36 @@ class QuizStudentController extends Controller
                 ));
             }
 
-            if(request('date_absen') != null) {
+            if(empty(request('date_absen'))) {
                 foreach(request('date_absen') as $index => $item) {
                     $date = $this->getDateAbsen($item);
-    
-                    $foundQuizDate = DB::table("quiz_date")->where(['quiz_id' => request('quiz_id'), 'class_room_id' => request('class_room_id')]);
-                    $checkDataQuizDate = $foundQuizDate->count();
-    
-                    if($checkDataQuizDate > 0) {
-                            $foundQuizDate->update(array(
-                                "date" => $date,
-                                "updated_at" => Carbon::now(),
-                            ));
-                    }else {
-                        $id = (string) Uuid::generate();
-    
-                        DB::table("quiz_date")
-                            ->insert(array(
-                                "id" => $id,
-                                "quiz_id" => request('quiz_id'),
-                                "class_room_id" => request('class_room_id'),
-                                "date" => $date,
-                                "created_at" => Carbon::now(),
-                            ));
-                    }
+
+                    $id = (string) Uuid::generate();
+
+                    DB::table("quiz_date")
+                        ->insert(array(
+                            "id" => $id,
+                            "quiz_id" => request('quiz_id'),
+                            "class_room_id" => request('class_room_id'),
+                            "date" => $date,
+                            "created_at" => Carbon::now(),
+                        ));
                 }
             }
 
-        //     flash_message('message', 'success', 'check', 'Data telah dibuat');
+            flash_message('message', 'success', 'check', 'Data telah dibuat');
 
-        //     DB::commit();
-        //     // all good
-        // } catch (\Exception $e) {
-        //     DB::rollback();
-        //     // something went wrong
+            DB::commit();
+            // all good
+        } catch (\Exception $e) {
+            DB::rollback();
+            // something went wrong
 
-        //     flash_message('message', 'danger', 'close', 'Data gagal di dibuat');
-        // }
+            flash_message('message', 'danger', 'close', 'Data gagal di dibuat');
+        }
 
         return redirect()->route('quizStudent');
     }
-
-    // public function update($id) {
-    //     try {
-    //         DB::beginTransaction();
-
-    //         $quizStudent = DB::table("quiz_student")->where('id', $id);
-
-    //         $quizStudent->update(array(
-    //             "quiz_id" => request('quiz_id'),
-    //             "updated_at" => Carbon::now(),
-    //         ));
-
-    //         flash_message('message', 'info', 'check', 'Data telah disimpan');
-    //         DB::commit();
-    //         // all good
-    //     } catch (\Exception $e) {
-    //         DB::rollback();
-    //         flash_message('message', 'danger', 'close', 'Data gagal di disimpan');
-    //     }
-
-    //     return redirect()->route('quizStudent');
-    // }
 
     public function delete($id) {
         $quizStudent = DB::table("quiz_student")->where('id', $id);
