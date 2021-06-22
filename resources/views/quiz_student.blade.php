@@ -186,8 +186,8 @@
                                 <table id="quiz_student">
                                     <thead>
                                         <tr>
-                                            <th rowspan="2" data-width="20" data-formatter="actionFormatter">Action</th>
-                                            <th rowspan="2"  data-width="50" data-field="name_student">Nama Peserta</th>
+                                            <th rowspan="2" data-width="5" data-formatter="actionFormatter">Action</th>
+                                            <th rowspan="2" data-width="50" data-field="name_student">Nama Peserta</th>
                                             <th colspan="4" data-align="center">Pertemuan</th>
                                             <th rowspan="2" data-width="30" data-field="value">Nilai</th>
                                             <th rowspan="2" data-width="30" data-field="grade">Grade</th>
@@ -347,29 +347,43 @@
                 findDataQuizStudent.absens = [
                     ...findDataQuizStudent.absens,
                     {
-                        date_absen: moment(findDataQuizDate.date).format('MM/DD'),
                         student_id: student_id,
+                        quiz_student_id: quiz_student_id,
                         absen_type_id: value,
+                        date_absen: moment(findDataQuizDate.date).format('MM/DD'),
                     },
                 ];
             }else {
                 findDataQuizStudent.absens[findIndexAbsen] = {
                     ...findDataQuizStudent.absens[findIndexAbsen],
-                    date_absen: moment(findDataQuizDate.date).format('MM/DD'),
                     student_id: student_id,
+                    quiz_student_id: quiz_student_id,
                     absen_type_id: value,
+                    date_absen: moment(findDataQuizDate.date).format('MM/DD'),
                 }
             }
-
-            console.log(state.dataQuizStudent);
         }
 
         function edit(index) {
-            console.log(index);
-            // data = quizStudentTable.bootstrapTable('getData');
-            // form.attr('action', $('#edit_'+index).attr('data-link'));
+            $.ajax({
+                url: "{{url('absen/ajaxSave')}}",
+                data: JSON.stringify(state.dataQuizStudent[index]),
+                dataType: "JSON",
+                contentType: "application/json",
+                type: "POST",
+                success: function (result) {
+                    console.log(result);
+                },
+                error: function (error) {
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Oops... Error...',
+                        html: "Maaf, gagal kirim data absen",
+                    });
 
-            // nameClassRoom.val(data[index].name_quiz);
+                    console.log(error);
+                }
+            });
         }
 
         function loadDataStudent() {

@@ -66,4 +66,5 @@ Route::group(['prefix' => 'quiz-student'], function() {
 
 Route::group(['prefix' => 'absen'], function() {
     Route::get('ajaxRead', 'AbsenController@ajaxRead');
+    Route::post('ajaxSave', 'AbsenController@ajaxSave');
 });

@@ -37,4 +37,8 @@ class AbsenController extends Controller
 
         return response()->json( [ "rows" => $data, "data" => $iTbl, "total" => $total, "offset" => request('offset'), "limit" => request('limit'), "search" => request('search')]);
     }
+
+    public function ajaxSave() {
+        return request()->all();
+    }
 }
