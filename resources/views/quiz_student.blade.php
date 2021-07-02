@@ -34,6 +34,10 @@
         .form-absen-type {
             padding: 0px;
         }
+
+        #quiz_student > thead > tr:nth-child(1) > th:nth-child(1) > div.th-inner {
+            width: 15px;
+        }
         /* .form-date-absen {
             width: 100px;
         } */
@@ -87,30 +91,14 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="form-group row">
-                                        <div class="col-sm-12 col-md-12">
-                                            <label class="block"> Pertemuan 1 </label>
-                                            <input type="text" name="date_absen[]" class="form-control form-date-absen">
+                                    @for ($i = 0; $i < 4; $i++)
+                                        <div class="form-group row">
+                                            <div class="col-sm-12 col-md-12">
+                                                <label class="block"> Pertemuan {{$i + 1}} </label>
+                                                <input type="text" name="date_absen[]" class="form-control form-date-absen" placeholder="contoh: 6/3">
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-sm-12 col-md-12">
-                                            <label class="block"> Pertemuan 2 </label>
-                                            <input type="text" name="date_absen[]" class="form-control form-date-absen">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-sm-12 col-md-12">
-                                            <label class="block"> Pertemuan 3 </label>
-                                            <input type="text" name="date_absen[]" class="form-control form-date-absen">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-sm-12 col-md-12">
-                                            <label class="block"> Pertemuan 4 </label>
-                                            <input type="text" name="date_absen[]" class="form-control form-date-absen">
-                                        </div>
-                                    </div>
+                                    @endfor
                                     {{-- <div class="multi-student"></div> --}}
                                     <div class="form-group row multi-student">
                                         <div class="col-sm-12 col-md-12">
@@ -186,7 +174,7 @@
                                 <table id="quiz_student">
                                     <thead>
                                         <tr>
-                                            <th rowspan="2" data-width="5" data-formatter="actionFormatter">Action</th>
+                                            <th rowspan="2" data-width="15" data-formatter="actionFormatter">#</th>
                                             <th rowspan="2" data-width="50" data-field="name_student">Nama Peserta</th>
                                             <th colspan="4" data-align="center">Pertemuan</th>
                                             <th rowspan="2" data-width="30" data-field="value">Nilai</th>
@@ -222,7 +210,7 @@
         var state = {
             countFormStudent: 1,
             dataStudent: [],
-            dataQuizStudent: [],
+            dataQuizStudent: [{absens: [{id: 1}]}],
             dataQuizDate: [],
             indexQuizDate: 0,
             quiz_id: '',
@@ -333,35 +321,66 @@
         }
 
         function chooseAbsenType(value, quiz_student_id, student_id, indexQuizDate) {
-            // console.log(value, quiz_student_id, student_id);
+            console.log(value, quiz_student_id, student_id);
 
-            var findIndex = state.dataQuizStudent.findIndex(item => item.student_id == student_id);
-            var findDataQuizStudent = state.dataQuizStudent[findIndex];
-            var findDataQuizDate = state.dataQuizDate[indexQuizDate];
-            var findIndexAbsen = findDataQuizStudent.absens.findIndex(item =>
-                                                                    item.student_id == student_id &&
-                                                                    item.date_absen == moment(findDataQuizDate.date).format('MM/DD')
-                                                                );
+            state.dataQuizStudent
+                .filter(item => item.student_id == student_id)
+                .reduce((filtered, item) => {
+                    console.log(item);
+                });
 
-            if(findIndexAbsen < 0) {
-                findDataQuizStudent.absens = [
-                    ...findDataQuizStudent.absens,
-                    {
-                        student_id: student_id,
-                        quiz_student_id: quiz_student_id,
-                        absen_type_id: value,
-                        date_absen: moment(findDataQuizDate.date).format('MM/DD'),
-                    },
-                ];
-            }else {
-                findDataQuizStudent.absens[findIndexAbsen] = {
-                    ...findDataQuizStudent.absens[findIndexAbsen],
-                    student_id: student_id,
-                    quiz_student_id: quiz_student_id,
-                    absen_type_id: value,
-                    date_absen: moment(findDataQuizDate.date).format('MM/DD'),
-                }
-            }
+            // let dataQuizStudent = state.dataQuizStudent[indexQuizDate];
+            // let checkDataAbsen = dataQuizStudent.absens?.some(item => item.student_id == student_id);
+
+            // if(!checkDataAbsen) {
+            //     console.log("null");
+            //     dataQuizStudent.absens.push({
+            //             student_id: student_id,
+            //             quiz_student_id: quiz_student_id,
+            //             absen_type_id: value,
+            //             date_absen: state.dataQuizDate[indexQuizDate].date,
+            //         });
+            // }
+            // else {
+
+            // }
+
+            // .push({
+            //             student_id: student_id,
+            //             quiz_student_id: quiz_student_id,
+            //             absen_type_id: value,
+            //             date_absen: state.dataQuizDate[indexQuizDate].date,
+            //         });
+
+            // console.log(state.dataQuizStudent[indexQuizDate]);
+
+            // var findIndex = state.dataQuizStudent.findIndex(item => item.student_id == student_id);
+            // var findDataQuizStudent = state.dataQuizStudent[findIndex];
+            // var findDataQuizDate = state.dataQuizDate[indexQuizDate];
+            // var findIndexAbsen = findDataQuizStudent.absens.findIndex(item =>
+            //                                                         item.student_id == student_id &&
+            //                                                         item.date_absen == moment(findDataQuizDate.date).format('MM/DD')
+            //                                                     );
+
+            // if(findIndexAbsen < 0) {
+            //     findDataQuizStudent.absens = [
+            //         ...findDataQuizStudent.absens,
+            //         {
+            //             student_id: student_id,
+            //             quiz_student_id: quiz_student_id,
+            //             absen_type_id: value,
+            //             date_absen: findDataQuizDate.date,
+            //         },
+            //     ];
+            // }else {
+            //     findDataQuizStudent.absens[findIndexAbsen] = {
+            //         ...findDataQuizStudent.absens[findIndexAbsen],
+            //         student_id: student_id,
+            //         quiz_student_id: quiz_student_id,
+            //         absen_type_id: value,
+            //         date_absen: moment(findDataQuizDate.date).format('MM/DD'),
+            //     }
+            // }
         }
 
         function edit(index) {

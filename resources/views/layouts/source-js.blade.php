@@ -62,5 +62,5 @@ var substringMatcher = function(strs) {
 
 setTimeout(function(){
     $('.alert').hide();
-}, 3000)
+}, 10000)
 </script>

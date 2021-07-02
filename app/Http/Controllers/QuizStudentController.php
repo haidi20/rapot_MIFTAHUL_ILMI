@@ -107,20 +107,25 @@ class QuizStudentController extends Controller
                 ));
             }
 
-            if(empty(request('date_absen'))) {
-                foreach(request('date_absen') as $index => $item) {
-                    $date = $this->getDateAbsen($item);
-
+            foreach(request('date_absen') as $index => $item) {
+                if($item != null) {
                     $id = (string) Uuid::generate();
 
-                    DB::table("quiz_date")
-                        ->insert(array(
-                            "id" => $id,
-                            "quiz_id" => request('quiz_id'),
-                            "class_room_id" => request('class_room_id'),
-                            "date" => $date,
-                            "created_at" => Carbon::now(),
-                        ));
+                    $data = DB::table("quiz_date")
+                                ->where(["quiz_id" => request('quiz_id'), "class_room_id" => request('class_room_id')]);
+
+                    if($data->get()->count() > 4) {
+                        $data->update(["date" => $item]);
+                    }else {
+                        DB::table("quiz_date")
+                            ->insert([
+                                "id" => $id,
+                                "quiz_id" => request('quiz_id'),
+                                "class_room_id" => request('class_room_id'),
+                                "date" => $item,
+                                "created_at" => Carbon::now(),
+                            ]);
+                    }
                 }
             }
 
@@ -132,7 +137,7 @@ class QuizStudentController extends Controller
             DB::rollback();
             // something went wrong
 
-            flash_message('message', 'danger', 'close', 'Data gagal di dibuat');
+            flash_message('message', 'danger', 'close', 'Data gagal di dibuat ' . $e);
         }
 
         return redirect()->route('quizStudent');
