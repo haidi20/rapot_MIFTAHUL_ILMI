@@ -217,6 +217,7 @@
             class_room_id: '',
             date_absen: [],
             dataAbsenType: [],
+            dataAbsen: [],
         }
 
         var data = [];
@@ -267,7 +268,6 @@
                     return params;
                 },
                 onLoadSuccess: function(data) {
-                    console.log('success');
                     var listDateAbsen = '';
 
                     state.dataQuizStudent = data.rows;
@@ -294,7 +294,7 @@
             return str;
         }
 
-        function valueAbsenFormatter(value, row, index) {
+        function valueAbsenFormatter(value, row) {
             var selectAbsenType = '';
             var optionAbsenType = '';
             var childOptionAbsenType = '';
@@ -321,90 +321,76 @@
         }
 
         function chooseAbsenType(value, quiz_student_id, student_id, indexQuizDate) {
-            console.log(value, quiz_student_id, student_id);
+            // console.log(value, quiz_student_id, student_id, state.dataQuizDate[indexQuizDate].id);
 
-            state.dataQuizStudent
-                .filter(item => item.student_id == student_id)
-                .reduce((filtered, item) => {
-                    console.log(item);
-                });
+            let checkDataAbsen = state.dataAbsen
+                                        .some(item => item.student_id == student_id && item.date_absen_id == state.dataQuizDate[indexQuizDate].id);
 
-            // let dataQuizStudent = state.dataQuizStudent[indexQuizDate];
-            // let checkDataAbsen = dataQuizStudent.absens?.some(item => item.student_id == student_id);
-
-            // if(!checkDataAbsen) {
-            //     console.log("null");
-            //     dataQuizStudent.absens.push({
-            //             student_id: student_id,
-            //             quiz_student_id: quiz_student_id,
-            //             absen_type_id: value,
-            //             date_absen: state.dataQuizDate[indexQuizDate].date,
-            //         });
-            // }
-            // else {
-
-            // }
-
-            // .push({
-            //             student_id: student_id,
-            //             quiz_student_id: quiz_student_id,
-            //             absen_type_id: value,
-            //             date_absen: state.dataQuizDate[indexQuizDate].date,
-            //         });
-
-            // console.log(state.dataQuizStudent[indexQuizDate]);
-
-            // var findIndex = state.dataQuizStudent.findIndex(item => item.student_id == student_id);
-            // var findDataQuizStudent = state.dataQuizStudent[findIndex];
-            // var findDataQuizDate = state.dataQuizDate[indexQuizDate];
-            // var findIndexAbsen = findDataQuizStudent.absens.findIndex(item =>
-            //                                                         item.student_id == student_id &&
-            //                                                         item.date_absen == moment(findDataQuizDate.date).format('MM/DD')
-            //                                                     );
-
-            // if(findIndexAbsen < 0) {
-            //     findDataQuizStudent.absens = [
-            //         ...findDataQuizStudent.absens,
-            //         {
-            //             student_id: student_id,
-            //             quiz_student_id: quiz_student_id,
-            //             absen_type_id: value,
-            //             date_absen: findDataQuizDate.date,
-            //         },
-            //     ];
-            // }else {
-            //     findDataQuizStudent.absens[findIndexAbsen] = {
-            //         ...findDataQuizStudent.absens[findIndexAbsen],
-            //         student_id: student_id,
-            //         quiz_student_id: quiz_student_id,
-            //         absen_type_id: value,
-            //         date_absen: moment(findDataQuizDate.date).format('MM/DD'),
-            //     }
-            // }
+            if(checkDataAbsen) {
+                state.dataAbsen
+                    .map((item, index) => {
+                        if(item.student_id == student_id && item.date_absen_id == state.dataQuizDate[indexQuizDate].id) {
+                            state.dataAbsen[index] = {
+                                ...item,
+                                student_id: student_id,
+                                quiz_student_id: quiz_student_id,
+                                absen_type_id: value,
+                                date_absen: state.dataQuizDate[indexQuizDate].date,
+                                date_absen_id: state.dataQuizDate[indexQuizDate].id,
+                            }
+                        }
+                    });
+            }else {
+                state.dataAbsen = [
+                    ...state.dataAbsen,
+                    {
+                        student_id: student_id,
+                        quiz_student_id: quiz_student_id,
+                        absen_type_id: value,
+                        date_absen: state.dataQuizDate[indexQuizDate].date,
+                        date_absen_id: state.dataQuizDate[indexQuizDate].id,
+                    }
+                ];
+            }
         }
 
         function edit(index) {
+            let studentId = state.dataQuizStudent[index].student_id;
+            let dataAbsen = state.dataAbsen.filter(item => item.student_id == studentId);
+
             $.ajax({
                 url: "{{url('absen/ajaxSave')}}",
-                data: JSON.stringify(state.dataQuizStudent[index]),
+                data: JSON.stringify({"data": dataAbsen}),
                 dataType: "JSON",
                 contentType: "application/json",
                 type: "POST",
                 success: function (result) {
+                    console.log("success edit");
                     console.log(result);
                 },
-                error: function (error) {
-                    Swal.fire({
-                        type: 'error',
-                        title: 'Oops... Error...',
-                        html: "Maaf, gagal kirim data absen",
-                    });
+                error: function (request, status, error) {
+                    console.log(request.responseText);
+                    // const Toast = Swal.mixin({
+                    //     toast: true,
+                    //     position: 'top-end',
+                    //     showConfirmButton: false,
+                    //     timer: 3000,
+                    //     timerProgressBar: true,
+                    //     // onOpen: (toast) => {
+                    //     //     toast.addEventListener('mouseenter', Swal.stopTimer)
+                    //     //     toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    //     // }
+                    // });
 
-                    console.log(error);
+                    // Toast.fire({
+                    //     icon: 'warning',
+                    //     title: "Maaf, gagal kirim data absen",
+                    // });
                 }
             });
         }
 
+        // untuk resource tambah form student
         function loadDataStudent() {
             $.ajax({
                 url: "{{url('master/student/ajaxReadTypeahead')}}",

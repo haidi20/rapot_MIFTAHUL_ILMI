@@ -39,6 +39,52 @@ class AbsenController extends Controller
     }
 
     public function ajaxSave() {
-        return request()->all();
+
+        foreach (request('data') as $key => $value) {
+            if($value != null) {
+                Absen::updateOrCreate(
+                    [
+                        "student_id" => $value['student_id'],
+                        "quiz_student_id" => $value['quiz_student_id'],
+                        "date_absen_id" => $value['date_absen_id'],
+                    ],
+                    [
+                        "absen_type_id" => $value['absen_type_id'],
+                    ]
+                    );
+            }
+        }
+
+        // try {
+        //     DB::beginTransaction();
+
+        //     foreach (request('data') as $key => $value) {
+        //         if($value != null) {
+        //             Absen::updateOrCreate(
+        //                 [
+        //                     "student_id" => $value['student_id'],
+        //                     "quiz_student_id" => $value['quiz_student_id'],
+        //                     "date_absen_id" => $value['date_absen_id'],
+        //                 ],
+        //                 [
+        //                     "absen_type_id" => $value['absen_type_id'],
+        //                 ]
+        //              );
+        //         }
+        //     }
+
+        //     // flash_message('message', 'success', 'check', 'Data telah dibuat');
+
+        //     DB::commit();
+
+        //     return $this->responseWithSuccess('Data telah dibuat', "ok");
+        //     // all good
+        // } catch (\Exception $e) {
+        //     DB::rollback();
+        //     // something went wrong
+
+        //     // flash_message('message', 'danger', 'close', 'Data gagal di dibuat' . $e);
+        //     return $this->responseWithError('Data gagal di dibuat ' . $e, "error");
+        // }
     }
 }
