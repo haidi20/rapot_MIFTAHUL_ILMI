@@ -57,7 +57,7 @@
         var data = [];
         var form = $('#form');
         var btnSave = $('#btnSave');
-        var idClassRoom = $('#student');
+        var tblStudent = $('#student');
         var nameClassRoom = $('#name_student');
 
         $(document).ready(function() {
@@ -65,14 +65,14 @@
         });
 
         function edit(index) {
-            data = idClassRoom.bootstrapTable('getData');
+            data = tblStudent.bootstrapTable('getData');
             form.attr('action', $('#edit_'+index).attr('data-link'));
 
             nameClassRoom.val(data[index].name_student);
         }
 
         function remove(index) {
-            data = idClassRoom.bootstrapTable('getData');
+            data = tblStudent.bootstrapTable('getData');
 
             Swal.fire({
                 title: 'Yakin hapus data kelas <b>'+data[index].name_student+'</b> ?',
@@ -93,7 +93,7 @@
         }
 
         function readData() {
-            idClassRoom.bootstrapTable({
+            tblStudent.bootstrapTable({
                 url: "{{url('/master/student/ajaxRead')}}",
                 method: 'get',
                 locale: 'en-US',
@@ -103,7 +103,7 @@
                 search: true,
                 pagination: true,
                 sidePagination: 'server',
-                pageSize: 10,
+                pageSize: 3,
                 sortable: true,
                 //idField: 'NRP',
                 columns: [

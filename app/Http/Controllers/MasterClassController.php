@@ -27,8 +27,8 @@ class MasterClassController extends Controller
                         ->orWhere('description', 'like', '%'.request('search').'%');
         }
 
-        $data = $iTbl->where('is_deleted', 0)->skip(request('offset'))->take(request('limit'))->get();
         $total = $iTbl->count();
+        $data = $iTbl->where('is_deleted', 0)->skip(request('offset'))->take(request('limit'))->get();
 
         // dd(DB::getQueryLog());
 
@@ -89,7 +89,7 @@ class MasterClassController extends Controller
                 "created_at" => Carbon::now(),
             ));
 
-            flash_message('message', 'success', 'check', 'Data telah dibuat');
+            flash_message('message', 'success', 'check', 'Data telah dikirim');
 
             DB::commit();
             // all good
@@ -97,7 +97,7 @@ class MasterClassController extends Controller
             DB::rollback();
             // something went wrong
 
-            flash_message('message', 'danger', 'close', 'Data gagal di dibuat');
+            flash_message('message', 'danger', 'close', 'Data gagal di dikirim');
         }
 
         return redirect()->route('masterClass');
@@ -116,12 +116,12 @@ class MasterClassController extends Controller
                 "updated_at" => Carbon::now(),
             ));
 
-            flash_message('message', 'info', 'check', 'Data telah disimpan');
+            flash_message('message', 'info', 'check', 'Data telah diperbaharui');
             DB::commit();
             // all good
         } catch (\Exception $e) {
             DB::rollback();
-            flash_message('message', 'danger', 'close', 'Data gagal di disimpan');
+            flash_message('message', 'danger', 'close', 'Data gagal diperbaharui');
         }
 
         return redirect()->route('masterClass');

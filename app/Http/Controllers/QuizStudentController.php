@@ -31,6 +31,7 @@ class QuizStudentController extends Controller
         $iTbl = (object) [];
         $data = [];
         $quizDate = [];
+        $offset = request('offset');
 
         if(request('quiz_id') != null && request('class_room_id') != null) {
             $quizDate = QuizDate::where(['quiz_id' => request('quiz_id'), 'class_room_id' => request('class_room_id')])->get();
@@ -41,6 +42,7 @@ class QuizStudentController extends Controller
             $iTbl = $iTbl->leftJoin('student', 'student.id', '=', 'quiz_student.student_id');
 
             $iTbl = $iTbl->where(['quiz_id' => request('quiz_id'), 'class_room_id' => request('class_room_id')]);
+            $total = $iTbl->count();
 
             if(request("search") != null) {
                 $iTbl = $iTbl->where('quiz_student.is_deleted', 0)
@@ -48,8 +50,7 @@ class QuizStudentController extends Controller
                             ->where('name_student', 'like', '%'.request('search').'%');
             }
 
-            $data = $iTbl->where('quiz_student.is_deleted', 0)->skip(request('offset'))->take(request('limit'))->get();
-            $total = $iTbl->count();
+            $data = $iTbl->where('quiz_student.is_deleted', 0)->skip($offset)->take(request('limit'))->get();
 
             $data = $data->map(function($row) {
                 $row->absens = DB::table('absen')->where('quiz_student_id', $row->id)->get();
@@ -62,7 +63,7 @@ class QuizStudentController extends Controller
 
         return response()->json([
                                     "rows" => $data, "data" => $iTbl, "total" => $total,
-                                    "offset" => request('offset'), "limit" => request('limit'),
+                                    "offset" => $offset, "limit" => request('limit'),
                                     "search" => request('search'), "quizDate" => $quizDate,
                                 ]);
     }
@@ -129,7 +130,7 @@ class QuizStudentController extends Controller
                 }
             }
 
-            flash_message('message', 'success', 'check', 'Data telah dibuat');
+            flash_message('message', 'success', 'check', 'Data berhasil dikirim');
 
             DB::commit();
             // all good
@@ -137,7 +138,7 @@ class QuizStudentController extends Controller
             DB::rollback();
             // something went wrong
 
-            flash_message('message', 'danger', 'close', 'Data gagal di dibuat ' . $e);
+            flash_message('message', 'danger', 'close', 'Data gagal dikirim');
         }
 
         return redirect()->route('quizStudent');

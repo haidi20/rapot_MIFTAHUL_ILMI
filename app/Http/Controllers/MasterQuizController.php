@@ -25,8 +25,8 @@ class MasterQuizController extends Controller
                         ->where('name_quiz', 'like', '%'.request('search').'%');
         }
 
-        $data = $iTbl->where('is_deleted', 0)->skip(request('offset'))->take(request('limit'))->get();
         $total = $iTbl->count();
+        $data = $iTbl->where('is_deleted', 0)->skip(request('offset'))->take(request('limit'))->get();
 
         return response()->json( [ "rows" => $data, "data" => $iTbl, "total" => $total, "offset" => request('offset'), "limit" => request('limit'), "search" => request('search')]);
     }
@@ -68,7 +68,7 @@ class MasterQuizController extends Controller
             DB::rollback();
             // something went wrong
 
-            flash_message('message', 'danger', 'close', 'Data gagal di dibuat');
+            flash_message('message', 'danger', 'close', 'Data gagal dibuat');
         }
 
         return redirect()->route('masterQuiz');
@@ -86,12 +86,12 @@ class MasterQuizController extends Controller
                 "updated_at" => Carbon::now(),
             ));
 
-            flash_message('message', 'info', 'check', 'Data telah disimpan');
+            flash_message('message', 'info', 'check', 'Data telah diperbaharui');
             DB::commit();
             // all good
         } catch (\Exception $e) {
             DB::rollback();
-            flash_message('message', 'danger', 'close', 'Data gagal di disimpan');
+            flash_message('message', 'danger', 'close', 'Data gagal diperbaharui');
         }
 
         return redirect()->route('masterQuiz');

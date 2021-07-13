@@ -215,18 +215,17 @@
             indexQuizDate: 0,
             quiz_id: '',
             class_room_id: '',
-            date_absen: [],
             dataAbsenType: [],
             dataAbsen: [],
         }
 
         var data = [];
-        var quizStudentTable = $('#quiz_student');
         var form = $('#form');
         var btnSave = $('#btnSave');
         var nameClassRoom = $('#name_quiz');
         var firstStudent = $('#first_student');
         var multiStudent = $('.multi-student');
+        var quizStudentTable = $('#quiz_student');
 
         var filterQuiz = $('#filter_quiz');
         var filterClass = $('#filter_class');
@@ -268,7 +267,9 @@
                     return params;
                 },
                 onLoadSuccess: function(data) {
-                    var listDateAbsen = '';
+                    let listDateAbsen = '';
+                    let checkDataAbsen = false;
+                    let dataAbsenCompare = [];
 
                     state.dataQuizStudent = data.rows;
                     state.dataQuizDate = data.quizDate;
@@ -282,6 +283,25 @@
 
                         quizStudentTable.find('thead > tr:nth-child(2)').prepend(listDateAbsen);
                     }
+
+                    $.each(data.rows, function(index, item) {
+                        // mengecek apakah data absen ada atau tidak
+                        if(item.absens.length > 0) {
+                            $.each(item.absens, function(indexAbsen, itemAbsen) {
+                                dataAbsenCompare = [
+                                    ...dataAbsenCompare,
+                                    itemAbsen,
+                                ];
+                            });
+                        }
+                    });
+
+                    $.each(dataAbsenCompare, function(index, item) {
+                        state.dataAbsen[index] = {
+                            ...state.dataAbsen[index],
+                            ...dataAbsenCompare[index],
+                        }
+                    });
                 },
             });
         }
@@ -295,31 +315,34 @@
         }
 
         function valueAbsenFormatter(value, row) {
+            var idSelect = '';
             var selectAbsenType = '';
             var optionAbsenType = '';
             var childOptionAbsenType = '';
             var quiz_student_id = row.id;
             var student_id = row.student_id;
+            var date_absen_id = row.date_absen_id;
 
             optionAbsenType += '<option ></option>'
             $.each(state.dataAbsenType, function(index, item) {
                 optionAbsenType += '<option value="'+item.id+'"> '+item.name_absen_type+' </option>';
             });
 
-
             childOptionAbsenType += `onchange="chooseAbsenType(this.value, '${quiz_student_id}', '${student_id}', '${state.indexQuizDate}')"`;
+            idSelect = `'${student_id}'_'${state.indexQuizDate}'`;
+
+            console.log(state.dataAbsenType[state.indexQuizDate]);
 
             state.indexQuizDate = state.indexQuizDate == 3 ? 0 : state.indexQuizDate + 1;
 
-            selectAbsenType +='<select name="value_date_absen[]"  '+childOptionAbsenType+' class="form-control form-absen-type">';
+            selectAbsenType +='<select id="'+idSelect+'" name="value_date_absen[]"  '+childOptionAbsenType+' class="form-control form-absen-type">';
                 selectAbsenType += optionAbsenType;
             selectAbsenType +='</select>';
-
-            // console.log(state.indexQuizDate);
 
             return selectAbsenType;
         }
 
+        // ketika pilih jenis absen di basen. dan langsung update di state.dataAbsen
         function chooseAbsenType(value, quiz_student_id, student_id, indexQuizDate) {
             // console.log(value, quiz_student_id, student_id, state.dataQuizDate[indexQuizDate].id);
 
@@ -365,27 +388,33 @@
                 contentType: "application/json",
                 type: "POST",
                 success: function (result) {
-                    console.log("success edit");
-                    console.log(result);
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                    });
+
+                    Toast.fire({
+                        icon: 'success',
+                        title: result.data,
+                    });
                 },
                 error: function (request, status, error) {
                     console.log(request.responseText);
-                    // const Toast = Swal.mixin({
-                    //     toast: true,
-                    //     position: 'top-end',
-                    //     showConfirmButton: false,
-                    //     timer: 3000,
-                    //     timerProgressBar: true,
-                    //     // onOpen: (toast) => {
-                    //     //     toast.addEventListener('mouseenter', Swal.stopTimer)
-                    //     //     toast.addEventListener('mouseleave', Swal.resumeTimer)
-                    //     // }
-                    // });
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                    });
 
-                    // Toast.fire({
-                    //     icon: 'warning',
-                    //     title: "Maaf, gagal kirim data absen",
-                    // });
+                    Toast.fire({
+                        icon: 'warning',
+                        title: "Maaf, gagal kirim data absen",
+                    });
                 }
             });
         }
