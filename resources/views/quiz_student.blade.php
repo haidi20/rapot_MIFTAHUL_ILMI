@@ -65,6 +65,12 @@
                                     </div>
                                     <div class="form-group row">
                                         <div class="col-sm-12 col-md-12">
+                                            <label class="block"> Bulan </label>
+                                            <input type="date" class="datetime form-control">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-12 col-md-12">
                                             <label class="block"> Kelas </label>
                                             <select name="class_room_id" id="class_room_id" class="form-control select2 form-control-inverse">
                                                 <option value="">Pilih Kelas</option>
@@ -237,7 +243,6 @@
 
             $('.select2').select2();
             // Using Locales
-
         });
 
         function sendFilter() {
@@ -331,7 +336,7 @@
             childOptionAbsenType += `onchange="chooseAbsenType(this.value, '${quiz_student_id}', '${student_id}', '${state.indexQuizDate}')"`;
             idSelect = `'${student_id}'_'${state.indexQuizDate}'`;
 
-            console.log(state.dataAbsenType[state.indexQuizDate]);
+            // console.log(state.dataAbsenType[state.indexQuizDate]);
 
             state.indexQuizDate = state.indexQuizDate == 3 ? 0 : state.indexQuizDate + 1;
 

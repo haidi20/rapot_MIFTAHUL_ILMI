@@ -147,7 +147,7 @@ class QuizStudentController extends Controller
     public function delete($id) {
         $quizStudent = DB::table("quiz_student")->where('id', $id);
 
-         $quizStudent->update(array(
+        $quizStudent->update(array(
             "is_deleted" => 1,
         ));
 
