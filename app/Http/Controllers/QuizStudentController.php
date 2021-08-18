@@ -53,7 +53,14 @@ class QuizStudentController extends Controller
             $data = $iTbl->where('quiz_student.is_deleted', 0)->skip($offset)->take(request('limit'))->get();
 
             $data = $data->map(function($row) {
-                $row->absens = DB::table('absen')->where('quiz_student_id', $row->id)->get();
+                $row->absens = DB::select(DB::raw("
+                    SELECT *, STR_TO_DATE(date, '%m/%d') as custome_date
+                    FROM quiz_date
+                    LEFT JOIN absen ON quiz_date.id = absen.date_absen_id
+                    WHERE absen.student_id = '$row->student_id'
+                    ORDER BY custome_date
+                "));
+
 
                 return $row;
             });

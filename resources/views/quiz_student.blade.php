@@ -95,7 +95,7 @@
                                         <div class="form-group row">
                                             <div class="col-sm-12 col-md-12">
                                                 <label class="block"> Pertemuan {{$i + 1}} </label>
-                                                <input type="text" name="date_absen[]" class="form-control form-date-absen" placeholder="format: bulan/tanggal">
+                                                <input type="text" name="date_absen[]" class="form-control form-date-absen" placeholder="format: bulan/tanggal | 05/18">
                                             </div>
                                         </div>
                                     @endfor
@@ -252,6 +252,7 @@
         function sendFilter() {
             state.quiz_id = filterQuiz.val();
             state.class_room_id = filterClass.val();
+            // state.dataAbsen = [];
 
             quizStudentTable.bootstrapTable('refresh');
         }
@@ -283,7 +284,7 @@
                     state.dataQuizStudent = data.rows;
                     state.dataQuizDate = data.quizDate;
 
-                    // console.log(data);
+                    console.log(data.rows);
 
                     if(data.quizDate.length > 0) {
                         quizStudentTable.find('thead > tr:nth-child(2)').empty();
@@ -293,19 +294,29 @@
                         });
 
                         quizStudentTable.find('thead > tr:nth-child(2)').prepend(listDateAbsen);
+                    }else {
+                        quizStudentTable.find('thead > tr:nth-child(2)').empty();
+
+                        for(let i = 0; i <4; i++) {
+                            listDateAbsen += '<th data-width="100" data-align="center" style="text-align:center">-</th>';
+                        }
+
+                        quizStudentTable.find('thead > tr:nth-child(2)').prepend(listDateAbsen);
                     }
 
-                    // $.each(data.rows, function(index, item) {
-                    //     // mengecek apakah data absen ada atau tidak
-                    //     if(item.absens.length > 0) {
-                    //         $.each(item.absens, function(indexAbsen, itemAbsen) {
-                    //             dataAbsenCompare = [
-                    //                 ...dataAbsenCompare,
-                    //                 itemAbsen,
-                    //             ];
-                    //         });
-                    //     }
-                    // });
+                    $.each(data.rows, function(index, item) {
+                        // mengecek apakah data absen ada atau tidak
+                        if(item.absens.length > 0) {
+                            $.each(item.absens, function(indexAbsen, itemAbsen) {
+                                state.dataAbsen = [
+                                    ...state.dataAbsen,
+                                    itemAbsen,
+                                ];
+                            });
+                        }
+                    });
+
+                    // console.log(state.dataAbsen);
 
                     // $.each(dataAbsenCompare, function(index, item) {
                     //     state.dataAbsen[index] = {
@@ -335,11 +346,16 @@
             var student_id = row.student_id;
             var date_absen_id = row.date_absen_id;
 
-            // console.log(row);
-
-            optionAbsenType += '<option ></option>'
+            optionAbsenType += '<option ></option>';
             $.each(state.dataAbsenType, function(index, item) {
-                selectedOption = row.absens[state.indexQuizDate]?.absen_type_id == item.id ? 'selected' : '';
+                if(
+                    row.absens[state.indexQuizDate]?.absen_type_id == item.id
+                    && row.absens[state.indexQuizDate]?.student_id == student_id
+                ) {
+                    selectedOption = 'selected';
+                }else {
+                    selectedOption = '';
+                }
 
                 // console.log(row.absens[state.indexQuizDate]?.absen_type_id);
 
@@ -384,6 +400,8 @@
                         }
                     });
             }else {
+                // console.log(state.dataQuizDate);
+
                 state.dataAbsen = [
                     ...state.dataAbsen,
                     {
@@ -397,7 +415,7 @@
             }
 
 
-            console.table(state.dataAbsen);
+            // console.table(state.dataAbsen);
         }
 
         function edit(index) {
@@ -406,11 +424,18 @@
 
             $.ajax({
                 url: "{{url('absen/ajaxSave')}}",
-                data: JSON.stringify({"data": dataAbsen}),
+                data: JSON.stringify({
+                    "dataAbsen": dataAbsen,
+                    "quiz_id": state.quiz_id,
+                    "class_room_id": state.class_room_id,
+                    "student_id": studentId,
+                }),
                 dataType: "JSON",
                 contentType: "application/json",
                 type: "POST",
                 success: function (result) {
+                    // console.log(result);
+
                     const Toast = Swal.mixin({
                         toast: true,
                         position: 'top-end',
