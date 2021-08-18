@@ -65,12 +65,6 @@
                                     </div>
                                     <div class="form-group row">
                                         <div class="col-sm-12 col-md-12">
-                                            <label class="block"> Bulan </label>
-                                            <input type="date" class="datetime form-control">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-sm-12 col-md-12">
                                             <label class="block"> Kelas </label>
                                             <select name="class_room_id" id="class_room_id" class="form-control select2 form-control-inverse">
                                                 <option value="">Pilih Kelas</option>
@@ -101,7 +95,7 @@
                                         <div class="form-group row">
                                             <div class="col-sm-12 col-md-12">
                                                 <label class="block"> Pertemuan {{$i + 1}} </label>
-                                                <input type="text" name="date_absen[]" class="form-control form-date-absen" placeholder="contoh: 6/3">
+                                                <input type="text" name="date_absen[]" class="form-control form-date-absen" placeholder="format: bulan/tanggal">
                                             </div>
                                         </div>
                                     @endfor
@@ -138,6 +132,10 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="form-group row">
+                                    <div class="col-sm-12 col-md-3">
+                                        <label class="block"> Tanggal </label>
+                                       <input type="date" name="date" id="date" class="form-control">
+                                    </div>
                                     <div class="col-sm-12 col-md-3">
                                         <label class="block"> Kelas </label>
                                         <select name="class_room_id" id="filter_class" class="form-control form-control-inverse">
@@ -180,7 +178,7 @@
                                 <table id="quiz_student">
                                     <thead>
                                         <tr>
-                                            <th rowspan="2" data-width="15" data-formatter="actionFormatter">#</th>
+                                            <th rowspan="2" data-width="2" data-formatter="actionFormatter">#</th>
                                             <th rowspan="2" data-width="50" data-field="name_student">Nama Peserta</th>
                                             <th colspan="4" data-align="center">Pertemuan</th>
                                             <th rowspan="2" data-width="30" data-field="value">Nilai</th>
@@ -216,7 +214,13 @@
         var state = {
             countFormStudent: 1,
             dataStudent: [],
-            dataQuizStudent: [{absens: [{id: 1}]}],
+            dataQuizStudent: [
+                {
+                    absens: [
+                        {id: 1}
+                    ]
+                }
+            ],
             dataQuizDate: [],
             indexQuizDate: 0,
             quiz_id: '',
@@ -279,6 +283,8 @@
                     state.dataQuizStudent = data.rows;
                     state.dataQuizDate = data.quizDate;
 
+                    // console.log(data);
+
                     if(data.quizDate.length > 0) {
                         quizStudentTable.find('thead > tr:nth-child(2)').empty();
 
@@ -289,24 +295,24 @@
                         quizStudentTable.find('thead > tr:nth-child(2)').prepend(listDateAbsen);
                     }
 
-                    $.each(data.rows, function(index, item) {
-                        // mengecek apakah data absen ada atau tidak
-                        if(item.absens.length > 0) {
-                            $.each(item.absens, function(indexAbsen, itemAbsen) {
-                                dataAbsenCompare = [
-                                    ...dataAbsenCompare,
-                                    itemAbsen,
-                                ];
-                            });
-                        }
-                    });
+                    // $.each(data.rows, function(index, item) {
+                    //     // mengecek apakah data absen ada atau tidak
+                    //     if(item.absens.length > 0) {
+                    //         $.each(item.absens, function(indexAbsen, itemAbsen) {
+                    //             dataAbsenCompare = [
+                    //                 ...dataAbsenCompare,
+                    //                 itemAbsen,
+                    //             ];
+                    //         });
+                    //     }
+                    // });
 
-                    $.each(dataAbsenCompare, function(index, item) {
-                        state.dataAbsen[index] = {
-                            ...state.dataAbsen[index],
-                            ...dataAbsenCompare[index],
-                        }
-                    });
+                    // $.each(dataAbsenCompare, function(index, item) {
+                    //     state.dataAbsen[index] = {
+                    //         ...state.dataAbsen[index],
+                    //         ...dataAbsenCompare[index],
+                    //     }
+                    // });
                 },
             });
         }
@@ -314,13 +320,14 @@
         function actionFormatter(value, row, index) {
             var str = '';
             str += `<a type="button" id="edit_${index}" data-link="{{url('quiz-student/update')}}/${row.id}" onclick="edit('${index}')" class="btn btn-info btn-xsm"><i class="fas fa-pencil-alt"></i></i></a> &nbsp;`;
-            // str += `<a type="button" id="remove_${index}" data-link="{{url('quiz-student/delete')}}/${row.id}" onclick="remove('${index}')" class="btn btn-danger btn-xsm"><i class="fas fa-trash"></i></a>`;
+            str += `<a type="button" id="print_${index}" data-link="{{url('quiz-student/print')}}/${row.id}" onclick="print('${index}')" class="btn btn-success  btn-xsm"><i class="fas fa-file"></i></a>`;
 
             return str;
         }
 
         function valueAbsenFormatter(value, row) {
             var idSelect = '';
+            var selectedOption;
             var selectAbsenType = '';
             var optionAbsenType = '';
             var childOptionAbsenType = '';
@@ -328,9 +335,15 @@
             var student_id = row.student_id;
             var date_absen_id = row.date_absen_id;
 
+            // console.log(row);
+
             optionAbsenType += '<option ></option>'
             $.each(state.dataAbsenType, function(index, item) {
-                optionAbsenType += '<option value="'+item.id+'"> '+item.name_absen_type+' </option>';
+                selectedOption = row.absens[state.indexQuizDate]?.absen_type_id == item.id ? 'selected' : '';
+
+                // console.log(row.absens[state.indexQuizDate]?.absen_type_id);
+
+                optionAbsenType += '<option value="'+item.id+'" '+selectedOption+' > '+item.name_absen_type+' </option>';
             });
 
             childOptionAbsenType += `onchange="chooseAbsenType(this.value, '${quiz_student_id}', '${student_id}', '${state.indexQuizDate}')"`;
@@ -339,6 +352,8 @@
             // console.log(state.dataAbsenType[state.indexQuizDate]);
 
             state.indexQuizDate = state.indexQuizDate == 3 ? 0 : state.indexQuizDate + 1;
+
+
 
             selectAbsenType +='<select id="'+idSelect+'" name="value_date_absen[]"  '+childOptionAbsenType+' class="form-control form-absen-type">';
                 selectAbsenType += optionAbsenType;
@@ -380,6 +395,9 @@
                     }
                 ];
             }
+
+
+            console.table(state.dataAbsen);
         }
 
         function edit(index) {
