@@ -59,6 +59,7 @@ class QuizStudentController extends Controller
                     FROM quiz_date
                     LEFT JOIN absen ON quiz_date.id = absen.date_absen_id
                     WHERE absen.student_id = '$row->student_id'
+                    AND absen.quiz_student_id = '$row->id'
                     ORDER BY custome_date
                 "));
 
@@ -100,6 +101,8 @@ class QuizStudentController extends Controller
     public function store() {
         // return request()->all();
 
+        // return $this->is_array_empty(request('date_absen')) ? 'kosong' : 'isi';
+
         $checkDataQuizStudent = QuizStudent::where(['class_room_id' => request('class_room_id'), 'quiz_id' => request('quiz_id')])->first();
 
         if($checkDataQuizStudent) {
@@ -110,6 +113,24 @@ class QuizStudentController extends Controller
 
         if($this->is_array_empty(request('students'))) {
             flash_message('message', 'danger', 'close', 'Maaf, harus ada peserta');
+
+            return redirect()->route('quizStudent');
+        }
+
+        if($this->is_array_empty(request('date_absen'))) {
+            flash_message('message', 'danger', 'close', 'Maaf, inputan pertemuan tidak boleh kosong');
+
+            return redirect()->route('quizStudent');
+        }
+
+        if(request('class_room_id') == null) {
+            flash_message('message', 'danger', 'close', 'Maaf, harus pilih kelas');
+
+            return redirect()->route('quizStudent');
+        }
+
+        if(request('quiz_id') == null) {
+            flash_message('message', 'danger', 'close', 'Maaf, harus pilih kuis');
 
             return redirect()->route('quizStudent');
         }
@@ -194,12 +215,13 @@ class QuizStudentController extends Controller
 
     function is_array_empty($arr){
         if(is_array($arr)){
-            foreach($arr as $key => $value){
-                if(!empty($value) || $value != NULL || "" || "0" || "null"){
+            foreach($arr as $value) {
+                if($value == null || $value == ""){
                     return true;
                     break;//stop the process we have seen that at least 1 of the array has value so its not empty
                 }
             }
+
             return false;
         }
       }

@@ -183,7 +183,7 @@
                                             <th colspan="4" data-align="center">Pertemuan</th>
                                             <th rowspan="2" data-width="30" data-formatter="valueFormatter">Nilai</th>
                                             <th rowspan="2" data-width="100" data-formatter="gradeFormatter">Grade</th>
-                                            <th rowspan="2" data-width="130" data-formatter="noteFormatter">Catatan</th>
+                                            <th rowspan="2" data-width="250" data-formatter="noteFormatter">Catatan</th>
                                         </tr>
                                         <tr data="date_absen">
                                             <th data-width="30" data-align="center" data-formatter="absenFormatter">-</th>
