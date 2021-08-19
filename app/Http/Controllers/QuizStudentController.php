@@ -107,6 +107,12 @@ class QuizStudentController extends Controller
             return redirect()->route('quizStudent');
         }
 
+        if($this->is_array_empty(request('students'))) {
+            flash_message('message', 'danger', 'close', 'Maaf, harus ada peserta');
+
+            return redirect()->route('quizStudent');
+        }
+
         try {
             DB::beginTransaction();
 
@@ -130,18 +136,14 @@ class QuizStudentController extends Controller
                     $data = DB::table("quiz_date")
                                 ->where(["quiz_id" => request('quiz_id'), "class_room_id" => request('class_room_id')]);
 
-                    if($data->get()->count() > 4) {
-                        $data->update(["date" => $item]);
-                    }else {
-                        DB::table("quiz_date")
-                            ->insert([
-                                "id" => $id,
-                                "quiz_id" => request('quiz_id'),
-                                "class_room_id" => request('class_room_id'),
-                                "date" => $item,
-                                "created_at" => Carbon::now(),
-                            ]);
-                    }
+                    DB::table("quiz_date")
+                    ->insert([
+                        "id" => $id,
+                        "quiz_id" => request('quiz_id'),
+                        "class_room_id" => request('class_room_id'),
+                        "date" => $item,
+                        "created_at" => Carbon::now(),
+                    ]);
                 }
             }
 
@@ -182,4 +184,16 @@ class QuizStudentController extends Controller
 
         return $date;
     }
+
+    function is_array_empty($arr){
+        if(is_array($arr)){
+            foreach($arr as $key => $value){
+                if(!empty($value) || $value != NULL || "" || "0" || "null"){
+                    return true;
+                    break;//stop the process we have seen that at least 1 of the array has value so its not empty
+                }
+            }
+            return false;
+        }
+      }
 }
