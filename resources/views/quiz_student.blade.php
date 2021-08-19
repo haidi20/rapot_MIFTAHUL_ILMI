@@ -179,17 +179,17 @@
                                     <thead>
                                         <tr>
                                             <th rowspan="2" data-width="2" data-formatter="actionFormatter">#</th>
-                                            <th rowspan="2" data-width="50" data-field="name_student">Nama Peserta</th>
+                                            <th rowspan="2" data-width="20" data-field="name_student">Nama Peserta</th>
                                             <th colspan="4" data-align="center">Pertemuan</th>
-                                            <th rowspan="2" data-width="30" data-field="value">Nilai</th>
-                                            <th rowspan="2" data-width="30" data-field="grade">Grade</th>
-                                            <th rowspan="2" data-width="30" data-field="note">Catatan</th>
+                                            <th rowspan="2" data-width="30" data-formatter="valueFormatter">Nilai</th>
+                                            <th rowspan="2" data-width="100" data-formatter="gradeFormatter">Grade</th>
+                                            <th rowspan="2" data-width="130" data-formatter="noteFormatter">Catatan</th>
                                         </tr>
                                         <tr data="date_absen">
-                                            <th data-width="30" data-align="center" data-formatter="valueAbsenFormatter">-</th>
-                                            <th data-width="30" data-align="center" data-formatter="valueAbsenFormatter">-</th>
-                                            <th data-width="30" data-align="center" data-formatter="valueAbsenFormatter">-</th>
-                                            <th data-width="30" data-align="center" data-formatter="valueAbsenFormatter">-</th>
+                                            <th data-width="30" data-align="center" data-formatter="absenFormatter">-</th>
+                                            <th data-width="30" data-align="center" data-formatter="absenFormatter">-</th>
+                                            <th data-width="30" data-align="center" data-formatter="absenFormatter">-</th>
+                                            <th data-width="30" data-align="center" data-formatter="absenFormatter">-</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -249,94 +249,15 @@
             // Using Locales
         });
 
-        function sendFilter() {
-            state.quiz_id = filterQuiz.val();
-            state.class_room_id = filterClass.val();
-            // state.dataAbsen = [];
-
-            quizStudentTable.bootstrapTable('refresh');
-        }
-
-        function readData() {
-            quizStudentTable.bootstrapTable({
-                url: "{{url('/quiz-student/ajaxRead')}}",
-                method: 'get',
-                locale: 'en-US',
-                classes: 'table table-bordered table-hover',
-                toolbar: '#toolbar',
-                //showRefresh: true,
-                search: true,
-                pagination: true,
-                sidePagination: 'server',
-                pageSize: 10,
-                sortable: true,
-                queryParams: function(params) {
-                    params.quiz_id = state.quiz_id;
-                    params.class_room_id = state.class_room_id;
-
-                    return params;
-                },
-                onLoadSuccess: function(data) {
-                    let listDateAbsen = '';
-                    let checkDataAbsen = false;
-                    let dataAbsenCompare = [];
-
-                    state.dataQuizStudent = data.rows;
-                    state.dataQuizDate = data.quizDate;
-
-                    console.log(data.rows);
-
-                    if(data.quizDate.length > 0) {
-                        quizStudentTable.find('thead > tr:nth-child(2)').empty();
-
-                        $.each(data.quizDate, function(index, item){
-                            listDateAbsen += '<th data-width="100" data-align="center" style="text-align:center">'+moment(item.date).format("MM/DD")+'</th>';
-                        });
-
-                        quizStudentTable.find('thead > tr:nth-child(2)').prepend(listDateAbsen);
-                    }else {
-                        quizStudentTable.find('thead > tr:nth-child(2)').empty();
-
-                        for(let i = 0; i <4; i++) {
-                            listDateAbsen += '<th data-width="100" data-align="center" style="text-align:center">-</th>';
-                        }
-
-                        quizStudentTable.find('thead > tr:nth-child(2)').prepend(listDateAbsen);
-                    }
-
-                    $.each(data.rows, function(index, item) {
-                        // mengecek apakah data absen ada atau tidak
-                        if(item.absens.length > 0) {
-                            $.each(item.absens, function(indexAbsen, itemAbsen) {
-                                state.dataAbsen = [
-                                    ...state.dataAbsen,
-                                    itemAbsen,
-                                ];
-                            });
-                        }
-                    });
-
-                    // console.log(state.dataAbsen);
-
-                    // $.each(dataAbsenCompare, function(index, item) {
-                    //     state.dataAbsen[index] = {
-                    //         ...state.dataAbsen[index],
-                    //         ...dataAbsenCompare[index],
-                    //     }
-                    // });
-                },
-            });
-        }
-
         function actionFormatter(value, row, index) {
             var str = '';
             str += `<a type="button" id="edit_${index}" data-link="{{url('quiz-student/update')}}/${row.id}" onclick="edit('${index}')" class="btn btn-info btn-xsm"><i class="fas fa-pencil-alt"></i></i></a> &nbsp;`;
-            str += `<a type="button" id="print_${index}" data-link="{{url('quiz-student/print')}}/${row.id}" onclick="print('${index}')" class="btn btn-success  btn-xsm"><i class="fas fa-file"></i></a>`;
+            // str += `<a type="button" id="print_${index}" data-link="{{url('quiz-student/print')}}/${row.id}" onclick="print('${index}')" class="btn btn-success  btn-xsm"><i class="fas fa-file"></i></a>`;
 
             return str;
         }
 
-        function valueAbsenFormatter(value, row) {
+        function absenFormatter(value, row) {
             var idSelect = '';
             var selectedOption;
             var selectAbsenType = '';
@@ -376,12 +297,40 @@
             return selectAbsenType;
         }
 
+        function valueFormatter(value, row) {
+            let str = '';
+            let student_id = row.student_id;
+
+            str += `<input class="form-control" id="value_${student_id}" onkeyup="keyupValue(this.value, '${student_id}')" />`;
+
+            return str;
+        }
+
+        function gradeFormatter(value, row) {
+            let str = '';
+            let student_id = row.student_id;
+
+            str += `<input class="form-control" id="grade_${student_id}" onkeyup="keyupGrade(this.value, '${student_id}')" />`;
+
+            return str;
+        }
+
+        function noteFormatter(value, row) {
+            let str = '';
+            let student_id = row.student_id;
+
+            str += `<textarea class="form-control" id="note_${student_id}" onkeyup="keyupNote(this.value, '${student_id}')" ></textarea>`;
+
+            return str;
+        }
+
         // ketika pilih jenis absen di basen. dan langsung update di state.dataAbsen
         function chooseAbsenType(value, quiz_student_id, student_id, indexQuizDate) {
             // console.log(value, quiz_student_id, student_id, state.dataQuizDate[indexQuizDate].id);
 
             let checkDataAbsen = state.dataAbsen
-                                        .some(item => item.student_id == student_id && item.date_absen_id == state.dataQuizDate[indexQuizDate].id);
+                                        .some(item => item.student_id == student_id
+                                            && item.date_absen_id == state.dataQuizDate[indexQuizDate].id);
 
             if(checkDataAbsen) {
                 state.dataAbsen
@@ -414,55 +363,6 @@
 
 
             // console.table(state.dataAbsen);
-        }
-
-        function edit(index) {
-            let studentId = state.dataQuizStudent[index].student_id;
-            let dataAbsen = state.dataAbsen.filter(item => item.student_id == studentId);
-
-            $.ajax({
-                url: "{{url('absen/ajaxSave')}}",
-                data: JSON.stringify({
-                    "dataAbsen": dataAbsen,
-                    "quiz_id": state.quiz_id,
-                    "class_room_id": state.class_room_id,
-                    "student_id": studentId,
-                }),
-                dataType: "JSON",
-                contentType: "application/json",
-                type: "POST",
-                success: function (result) {
-                    // console.log(result);
-
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                    });
-
-                    Toast.fire({
-                        icon: 'success',
-                        title: result.data,
-                    });
-                },
-                error: function (request, status, error) {
-                    console.log(request.responseText);
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                    });
-
-                    Toast.fire({
-                        icon: 'warning',
-                        title: "Maaf, gagal kirim data absen",
-                    });
-                }
-            });
         }
 
         // untuk resource tambah form student
@@ -546,6 +446,159 @@
             state.countFormStudent = countFormStudent;
 
             $('#form_student_'+index).remove();
+        }
+
+        function keyupValue(value, student_id) {
+            let dataQuizStudent = state.dataQuizStudent
+                                        .find(item => item.student_id == student_id);
+
+            dataQuizStudent.value = value;
+        }
+
+        function keyupGrade(value, student_id) {
+            let dataQuizStudent = state.dataQuizStudent
+                                        .find(item => item.student_id == student_id);
+
+            dataQuizStudent.grade = value;
+        }
+
+        function keyupNote(value, student_id) {
+            let dataQuizStudent = state.dataQuizStudent
+                                        .find(item => item.student_id == student_id);
+
+            dataQuizStudent.note = value;
+        }
+
+        function sendFilter() {
+            state.quiz_id = filterQuiz.val();
+            state.class_room_id = filterClass.val();
+            // state.dataAbsen = [];
+
+            quizStudentTable.bootstrapTable('refresh');
+        }
+
+        function readData() {
+            quizStudentTable.bootstrapTable({
+                url: "{{url('/quiz-student/ajaxRead')}}",
+                method: 'get',
+                locale: 'en-US',
+                classes: 'table table-bordered table-hover',
+                toolbar: '#toolbar',
+                //showRefresh: true,
+                search: true,
+                pagination: true,
+                sidePagination: 'server',
+                pageSize: 10,
+                sortable: true,
+                queryParams: function(params) {
+                    params.quiz_id = state.quiz_id;
+                    params.class_room_id = state.class_room_id;
+
+                    return params;
+                },
+                onLoadSuccess: function(data) {
+                    let listDateAbsen = '';
+                    let checkDataAbsen = false;
+                    let dataAbsenCompare = [];
+
+                    state.dataQuizStudent = data.rows;
+                    state.dataQuizDate = data.quizDate;
+
+                    // console.log(data.rows);
+
+                    // memunculkan tanggal kuis dan reset jika load ulang.
+                    handleQuizDate(data, listDateAbsen);
+
+                    data.rows.map(item => {
+                        $('#value_'+item.student_id).val(item.value);
+                        $('#grade_'+item.student_id).val(item.grade);
+                        $('#note_'+item.student_id).val(item.note);
+                    });
+
+                    $.each(data.rows, function(index, item) {
+                        // mengecek apakah data absen ada atau tidak
+                        if(item.absens.length > 0) {
+                            $.each(item.absens, function(indexAbsen, itemAbsen) {
+                                state.dataAbsen = [
+                                    ...state.dataAbsen,
+                                    itemAbsen,
+                                ];
+                            });
+                        }
+                    });
+                },
+            });
+        }
+
+        function edit(index) {
+            let dataQuizStudent = state.dataQuizStudent[index];
+            let studentId = dataQuizStudent.student_id;
+            let dataAbsen = state.dataAbsen.filter(item => item.student_id == studentId);
+
+            $.ajax({
+                url: "{{url('absen/ajaxSave')}}",
+                data: JSON.stringify({
+                    "dataAbsen": dataAbsen,
+                    "dataQuizStudent": dataQuizStudent,
+                    "quiz_id": state.quiz_id,
+                    "class_room_id": state.class_room_id,
+                    "student_id": studentId,
+                }),
+                dataType: "JSON",
+                contentType: "application/json",
+                type: "POST",
+                success: function (result) {
+                    // console.log(result);
+
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                    });
+
+                    Toast.fire({
+                        icon: 'success',
+                        title: result.data,
+                    });
+                },
+                error: function (request, status, error) {
+                    console.log(request.responseText);
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                    });
+
+                    Toast.fire({
+                        icon: 'warning',
+                        title: "Maaf, gagal kirim data absen",
+                    });
+                }
+            });
+        }
+
+        function handleQuizDate(data, listDateAbsen) {
+            if(data.quizDate.length > 0) {
+                quizStudentTable.find('thead > tr:nth-child(2)').empty();
+
+                $.each(data.quizDate, function(index, item){
+                    listDateAbsen += '<th data-width="100" data-align="center" style="text-align:center">'+moment(item.date).format("MM/DD")+'</th>';
+                });
+
+                quizStudentTable.find('thead > tr:nth-child(2)').prepend(listDateAbsen);
+            }else {
+                quizStudentTable.find('thead > tr:nth-child(2)').empty();
+
+                for(let i = 0; i <4; i++) {
+                    listDateAbsen += '<th data-width="100" data-align="center" style="text-align:center">-</th>';
+                }
+
+                quizStudentTable.find('thead > tr:nth-child(2)').prepend(listDateAbsen);
+            }
         }
 
         // function remove(index) {

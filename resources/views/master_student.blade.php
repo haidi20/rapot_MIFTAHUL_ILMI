@@ -92,6 +92,10 @@
             });
         }
 
+        function print(index) {
+            console.log(index);
+        }
+
         function readData() {
             tblStudent.bootstrapTable({
                 url: "{{url('/master/student/ajaxRead')}}",
@@ -114,6 +118,7 @@
                             var str = '';
                             str += `<a type="button" id="edit_${index}" data-link="{{url('master/student/update')}}/${row.id}" onclick="edit('${index}')" class="btn btn-info btn-xsm"><i class="fas fa-pencil-alt"></i></i></a> &nbsp;`;
                             str += `<a type="button" id="remove_${index}" data-link="{{url('master/student/delete')}}/${row.id}" onclick="remove('${index}')" class="btn btn-danger btn-xsm"><i class="fas fa-trash"></i></a>`;
+                            str += `<a type="button" id="print_${index}" data-link="{{url('master/student/print')}}/${row.id}" onclick="print('${index}')" class="btn btn-success btn-xsm"><i class="fas fa-file"></i></a>`;
 
                             return str;
                         },

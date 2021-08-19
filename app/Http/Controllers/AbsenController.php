@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ClassRoom;
 use App\Models\Absen;
+use App\Models\LogError;
 use App\Models\QuizDate;
 use App\Models\QuizStudent;
 use Carbon\Carbon;
@@ -49,6 +50,12 @@ class AbsenController extends Controller
             $quizDate = QuizDate::where(['class_room_id' => request('class_room_id'), "quiz_id" => request('quiz_id')])
                                         ->get();
 
+            $quizStudent = QuizStudent::find(request('dataQuizStudent')['id']);
+            $quizStudent->value = request('dataQuizStudent')['value'];
+            $quizStudent->grade = request('dataQuizStudent')['grade'];
+            $quizStudent->note = request('dataQuizStudent')['note'];
+            $quizStudent->save();
+
             foreach($quizDate as $index => $item) {
                 // $checkDataAbsen =
                 $item->absen_type_id = null;
@@ -83,11 +90,16 @@ class AbsenController extends Controller
             // all good
         } catch (\Exception $e) {
             DB::rollback();
-            // something went wrong
+
+            LogError::insert([
+                "message" => $e,
+                "fitur" => "AbsenController@ajaxSave",
+                "created_at" => Carbon::now(),
+            ]);
 
             // flash_message('message', 'danger', 'close', 'Data gagal di dibuat' . $e);
-            // return $this->responseWithError('Data gagal diperbaharui', "error");
-            return $this->responseWithError($e, "error");
+            return $this->responseWithError('Data gagal diperbaharui', "error");
+            // return $this->responseWithError($e, "error");
         }
     }
 }

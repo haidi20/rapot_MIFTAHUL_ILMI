@@ -1,7 +1,17 @@
 @extends('layouts.mainLayout')
 
+@section('style')
+    <style>
+        #title_app > h5 {
+            text-align: left !important;
+            margin-top: 10px !important;
+        }
+    </style>
+@endsection
+
 @section('body')
     @include('layouts.loading')
+
     <div id="pcoded" class="pcoded">
         <div class="pcoded-overlay-box"></div>
         <div class="pcoded-container navbar-wrapper">
@@ -13,9 +23,10 @@
                         <a class="mobile-menu" id="mobile-collapse" href="#!">
                             <i class="feather icon-menu"></i>
                         </a>
-                        <a href="index.html">
+                        <a id="title_app" href="#">
                             {{-- <img class="img-fluid" src="../files/assets/images/logo.png" alt="Theme-Logo" /> --}}
-                            <h5>Raport</h5>
+                            <h5 style="text-align: left; margin-top: 18px;">Raport</h5>
+                            <p>MIFTAHUL ILMI SAMARINDA</p>
                         </a>
                         <a class="mobile-options">
                             <i class="feather icon-more-horizontal"></i>

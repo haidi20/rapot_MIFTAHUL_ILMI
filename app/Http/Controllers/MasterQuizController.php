@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LogError;
 use App\Models\Quiz;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -66,7 +67,12 @@ class MasterQuizController extends Controller
             // all good
         } catch (\Exception $e) {
             DB::rollback();
-            // something went wrong
+
+            LogError::insert([
+                "message" => $e,
+                "fitur" => "MasterQuizController@store",
+                "created_at" => Carbon::now(),
+            ]);
 
             flash_message('message', 'danger', 'close', 'Data gagal dibuat');
         }

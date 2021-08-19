@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ClassRoom;
+use App\Models\LogError;
 use App\Models\Student;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -66,7 +67,12 @@ class MasterStudentController extends Controller
             // all good
         } catch (\Exception $e) {
             DB::rollback();
-            // something went wrong
+
+            LogError::insert([
+                "message" => $e,
+                "fitur" => "MasterStudentController@store",
+                "created_at" => Carbon::now(),
+            ]);
 
             flash_message('message', 'danger', 'close', 'Data gagal dibuat');
         }

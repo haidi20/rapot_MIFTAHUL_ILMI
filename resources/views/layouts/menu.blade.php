@@ -40,7 +40,7 @@
             <li class="{{ active_menu('quiz-student') }}">
                 <a href="{{url('quiz-student')}}">
                     <span class="pcoded-micon"><i class="feather icon-edit-1"></i></span>
-                    <span class="pcoded-mtext">Isi Kuis</span>
+                    <span class="pcoded-mtext">Isi Penilaian</span>
                 </a>
             </li>
         </ul>
