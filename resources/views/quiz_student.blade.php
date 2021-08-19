@@ -30,13 +30,15 @@
             color: white;
             /* height: calc(2.25rem + 2px); */
         }
-
         .form-absen-type {
             padding: 0px;
         }
 
         #quiz_student > thead > tr:nth-child(1) > th:nth-child(1) > div.th-inner {
             width: 15px;
+        }
+        .ui-datepicker-calendar {
+            display: none;
         }
         /* .form-date-absen {
             width: 100px;
@@ -133,8 +135,8 @@
                             <div class="card-body">
                                 <div class="form-group row">
                                     <div class="col-sm-12 col-md-3">
-                                        <label class="block"> Tanggal </label>
-                                       <input type="date" name="date" id="date" class="form-control">
+                                        <label class="block"> Bulan </label>
+                                        <input type="month" name="filter_datetime" id="filter_datetime" class="form-control">
                                     </div>
                                     <div class="col-sm-12 col-md-3">
                                         <label class="block"> Kelas </label>
@@ -148,7 +150,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-sm-12 col-md-4">
+                                    <div class="col-sm-12 col-md-3">
                                         <label class="block"> Kuis </label>
                                         <select name="filter_quiz_id" id="filter_quiz" class="form-control form-control-inverse">
                                             <option value="">Pilih Kuis</option>
@@ -225,6 +227,7 @@
             indexQuizDate: 0,
             quiz_id: '',
             class_room_id: '',
+            datetime: moment().format('YYYY-MM'),
             dataAbsenType: [],
             dataAbsen: [],
         }
@@ -239,6 +242,7 @@
 
         var filterQuiz = $('#filter_quiz');
         var filterClass = $('#filter_class');
+        var filterDatetime = $('#filter_datetime');
 
         $(document).ready(function() {
             readData();
@@ -246,6 +250,8 @@
             loadDataAbsenType();
 
             $('.select2').select2();
+
+           filterDatetime.val(state.datetime);
             // Using Locales
         });
 
@@ -472,6 +478,7 @@
         function sendFilter() {
             state.quiz_id = filterQuiz.val();
             state.class_room_id = filterClass.val();
+            state.datetime = filterDatetime.val();
             // state.dataAbsen = [];
 
             quizStudentTable.bootstrapTable('refresh');
@@ -493,6 +500,7 @@
                 queryParams: function(params) {
                     params.quiz_id = state.quiz_id;
                     params.class_room_id = state.class_room_id;
+                    params.datetime = state.datetime;
 
                     return params;
                 },
@@ -504,7 +512,7 @@
                     state.dataQuizStudent = data.rows;
                     state.dataQuizDate = data.quizDate;
 
-                    // console.log(data.rows);
+                    console.log(data.rows);
 
                     // memunculkan tanggal kuis dan reset jika load ulang.
                     handleQuizDate(data, listDateAbsen);

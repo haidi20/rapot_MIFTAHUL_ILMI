@@ -35,14 +35,20 @@ class QuizStudentController extends Controller
         $offset = request('offset');
 
         if(request('quiz_id') != null && request('class_room_id') != null) {
-            $quizDate = QuizDate::where(['quiz_id' => request('quiz_id'), 'class_room_id' => request('class_room_id')])->get();
+            $quizDate = QuizDate::where(['quiz_id' => request('quiz_id'), 'class_room_id' => request('class_room_id')])
+                                ->whereMonth('created_at', Carbon::parse(request('datetime')))
+                                ->get();
             $iTbl = QuizStudent::select('quiz_student.*', 'student.name_student', 'quiz.name_quiz', 'class_room.name_class_room')
                                 ->orderBy('quiz.name_quiz');
             $iTbl = $iTbl->leftJoin('quiz', 'quiz.id', '=', 'quiz_student.quiz_id');
             $iTbl = $iTbl->leftJoin('class_room', 'class_room.id', '=', 'quiz_student.class_room_id');
             $iTbl = $iTbl->leftJoin('student', 'student.id', '=', 'quiz_student.student_id');
 
-            $iTbl = $iTbl->where(['quiz_id' => request('quiz_id'), 'class_room_id' => request('class_room_id')]);
+            $iTbl = $iTbl->where([
+                'quiz_id' => request('quiz_id'),
+                'class_room_id' => request('class_room_id'),
+            ])->whereMonth('quiz_student.created_at', Carbon::parse(request('datetime')));
+
             $total = $iTbl->count();
 
             if(request("search") != null) {
