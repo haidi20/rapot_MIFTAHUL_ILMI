@@ -369,8 +369,6 @@
 
             state.indexQuizDate = state.indexQuizDate == 3 ? 0 : state.indexQuizDate + 1;
 
-
-
             selectAbsenType +='<select id="'+idSelect+'" name="value_date_absen[]"  '+childOptionAbsenType+' class="form-control form-absen-type">';
                 selectAbsenType += optionAbsenType;
             selectAbsenType +='</select>';

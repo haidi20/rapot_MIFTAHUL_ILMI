@@ -99,6 +99,14 @@ class QuizStudentController extends Controller
     public function store() {
         // return request()->all();
 
+        $checkDataQuizStudent = QuizStudent::where(['class_room_id' => request('class_room_id'), 'quiz_id' => request('quiz_id')])->first();
+
+        if($checkDataQuizStudent) {
+            flash_message('message', 'danger', 'close', 'Maaf, kelas dan kuis sudah ada');
+
+            return redirect()->route('quizStudent');
+        }
+
         try {
             DB::beginTransaction();
 
