@@ -43,6 +43,12 @@
                     <span class="pcoded-mtext">Isi Penilaian</span>
                 </a>
             </li>
+            <li class="{{ active_menu('report') }}">
+                <a href="{{url('report')}}">
+                    <span class="pcoded-micon"><i class="feather icon-file"></i></span>
+                    <span class="pcoded-mtext">Cetak Rapot</span>
+                </a>
+            </li>
         </ul>
     </div>
 </nav>

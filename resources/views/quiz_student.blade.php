@@ -213,7 +213,7 @@
     <script type="text/javascript" src="{{asset('adminty/files/assets/pages/advance-elements/moment-with-locales.min.js')}}"></script>
     <script type="text/javascript" src="{{asset('adminty/files/assets/pages/advance-elements/bootstrap-datetimepicker.min.js')}}"></script>
     <script>
-        var state = {
+        let state = {
             countFormStudent: 1,
             dataStudent: [],
             dataQuizStudent: [
@@ -232,17 +232,17 @@
             dataAbsen: [],
         }
 
-        var data = [];
-        var form = $('#form');
-        var btnSave = $('#btnSave');
-        var nameClassRoom = $('#name_quiz');
-        var firstStudent = $('#first_student');
-        var multiStudent = $('.multi-student');
-        var quizStudentTable = $('#quiz_student');
+        let data = [];
+        let form = $('#form');
+        let btnSave = $('#btnSave');
+        let nameClassRoom = $('#name_quiz');
+        let firstStudent = $('#first_student');
+        let multiStudent = $('.multi-student');
+        let quizStudentTable = $('#quiz_student');
 
-        var filterQuiz = $('#filter_quiz');
-        var filterClass = $('#filter_class');
-        var filterDatetime = $('#filter_datetime');
+        let filterQuiz = $('#filter_quiz');
+        let filterClass = $('#filter_class');
+        let filterDatetime = $('#filter_datetime');
 
         $(document).ready(function() {
             readData();
@@ -256,7 +256,7 @@
         });
 
         function actionFormatter(value, row, index) {
-            var str = '';
+            let str = '';
             str += `<a type="button" id="edit_${index}" data-link="{{url('quiz-student/update')}}/${row.id}" onclick="edit('${index}')" class="btn btn-info btn-xsm"><i class="fas fa-pencil-alt"></i></i></a> &nbsp;`;
             // str += `<a type="button" id="print_${index}" data-link="{{url('quiz-student/print')}}/${row.id}" onclick="print('${index}')" class="btn btn-success  btn-xsm"><i class="fas fa-file"></i></a>`;
 
@@ -264,14 +264,14 @@
         }
 
         function absenFormatter(value, row) {
-            var idSelect = '';
-            var selectedOption;
-            var selectAbsenType = '';
-            var optionAbsenType = '';
-            var childOptionAbsenType = '';
-            var quiz_student_id = row.id;
-            var student_id = row.student_id;
-            var date_absen_id = row.date_absen_id;
+            let idSelect = '';
+            let selectedOption;
+            let selectAbsenType = '';
+            let optionAbsenType = '';
+            let childOptionAbsenType = '';
+            let quiz_student_id = row.id;
+            let student_id = row.student_id;
+            let date_absen_id = row.date_absen_id;
 
             optionAbsenType += '<option ></option>';
             $.each(state.dataAbsenType, function(index, item) {
@@ -380,7 +380,7 @@
                 type: "GET",
                 success: function (result) {
                     if (result.data) {
-                        var optionNewFormStudent = '';
+                        let optionNewFormStudent = '';
                         state.dataStudent = result.data;
                     }
                 },
@@ -420,9 +420,9 @@
         }
 
         function addFormStudent() {
-            var newFormStudent = '';
-            var optionNewFormStudent = '';
-            var countFormStudent = state.countFormStudent + 1;
+            let newFormStudent = '';
+            let optionNewFormStudent = '';
+            let countFormStudent = state.countFormStudent + 1;
             state.countFormStudent = countFormStudent;
 
             optionNewFormStudent += '<option> Pilih Peserta </option>';
@@ -448,7 +448,7 @@
         }
 
         function removeFormStudent(index) {
-            var countFormStudent = state.countFormStudent - 1;
+            let countFormStudent = state.countFormStudent - 1;
             state.countFormStudent = countFormStudent;
 
             $('#form_student_'+index).remove();

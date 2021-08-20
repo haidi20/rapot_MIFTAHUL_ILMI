@@ -68,3 +68,8 @@ Route::group(['prefix' => 'absen'], function() {
     Route::get('ajaxRead', 'AbsenController@ajaxRead');
     Route::post('ajaxSave', 'AbsenController@ajaxSave');
 });
+
+Route::group(['prefix' => 'report'], function() {
+    Route::get('', 'ReportController@index');
+    Route::get('ajaxRead', 'ReportController@ajaxRead');
+});

@@ -107,8 +107,6 @@ class QuizStudentController extends Controller
     public function store() {
         // return request()->all();
 
-        // return $this->is_array_empty(request('date_absen')) ? 'kosong' : 'isi';
-
         $checkDataQuizStudent = QuizStudent::where(['class_room_id' => request('class_room_id'), 'quiz_id' => request('quiz_id')])->first();
 
         if($checkDataQuizStudent) {
@@ -147,6 +145,13 @@ class QuizStudentController extends Controller
             foreach(request('students') as $index => $item) {
                 $quizStudent = DB::table("quiz_student");
                 $id = (string) Uuid::generate();
+                $checkStudentOtherClass = $quizStudent->where(['student_id' => $item, "quiz_id" => request('quiz_id')])->first();
+
+                if($checkStudentOtherClass) {
+                    flash_message('message', 'danger', 'close', 'Maaf, peserta ini sudah ada di kelas lain');
+
+                    return redirect()->route('quizStudent');
+                }
 
                 $quizStudent->insert(array(
                     "id" => $id,
@@ -198,25 +203,12 @@ class QuizStudentController extends Controller
     public function delete($id) {
         $quizStudent = DB::table("quiz_student")->where('id', $id);
 
-        $quizStudent->update(array(
+        $quizStudent->update([
             "is_deleted" => 1,
-        ));
+        ]);
 
         flash_message('message', 'success', 'check', 'Data telah dihapus');
         return redirect()->route('quizStudent');
-    }
-
-    // helper local
-    private function getDateAbsen($data) {
-        $dateNow = Carbon::now();
-
-        $dateMonthArray = explode('/', $data);
-        $day = $dateMonthArray[0];
-        $month = $dateMonthArray[1];
-
-        $date = Carbon::createFromDate($dateNow->format('Y'), $month, $day);
-
-        return $date;
     }
 
     function is_array_empty($arr){
