@@ -51,10 +51,13 @@ class ReportController extends Controller
     public function print() {
         $datetime = Carbon::parse(request('datetime'));
 
-        return $quizStudent = QuizStudent::where(['quiz_student.student_id' => request('student_id')])
+        $student = Student::find(request('student_id'))->first();
+
+        $quizStudent = QuizStudent::where(['quiz_student.student_id' => request('student_id')])
                                 ->whereMonth('quiz_student.created_at', $datetime)
                                 ->whereYear('quiz_student.created_at', $datetime)
                                 ->leftJoin('student', 'student.id', '=', 'quiz_student.student_id')
+                                ->leftJoin('quiz', 'quiz.id', '=', 'quiz_student.quiz_id')
                                 ->get();
 
         $countAbsen = AbsenType::all()->map(function($row) use($datetime){
@@ -71,6 +74,6 @@ class ReportController extends Controller
             return $result;
         });
 
-        return view('report_print', compact('quizStudent', 'countAbsen'));
+        return view('report_print', compact('quizStudent', 'countAbsen', 'student'));
     }
 }

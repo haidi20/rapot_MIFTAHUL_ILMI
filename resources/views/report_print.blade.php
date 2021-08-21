@@ -18,7 +18,7 @@
     </div>
     <div>
         <ul>
-            <li>Nama peserta : {{$quizStudent->name_student}}</li>
+            <li>Nama peserta : {{$student->name_student}}</li>
             <li>Jumlah tidak hadir :
                 <ul>
                     @foreach ($countAbsen as $item)
@@ -27,6 +27,22 @@
                 </ul>
             </li>
         </ul>
+    </div>
+    <div>
+        <table border="1">
+            <tr>
+                <th></th>
+                <th>Nilai</th>
+                <th>Catatan Mu'allimah</th>
+            </tr>
+            @foreach ($quizStudent as $item)
+                <tr>
+                    <td>{{$item->description}}</td>
+                    <td>{{$item->grade}}</td>
+                    <td>{{$item->note}}</td>
+                </tr>
+            @endforeach
+        </table>
     </div>
 </body>
 </html>
