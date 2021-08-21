@@ -108,7 +108,7 @@
                         title: 'Action',
                         formatter: function (value, row, index) {
                             var str = '';
-                            str += `<a type="button" id="print_${index}" data-link="{{url('master/student/print')}}/${row.id}" onclick="print('${index}')" class="btn btn-success btn-xsm"><i class="fas fa-file"></i></a>`;
+                            str += `<a type="button" id="print_${index}" data-link="{{url('report/print')}}" data-studentId="${row.student_id}" data-classRoomId="${row.class_room_id}" onclick="handlePrint('${index}')" class="btn btn-success btn-xsm"><i class="fas fa-file"></i></a>`;
 
                             return str;
                         },
@@ -119,6 +119,15 @@
                     },
                 ]
             });
+        }
+
+        function handlePrint(index) {
+            let url = $('#print_'+index).attr('data-link');
+            let student_id = $('#print_'+index).attr('data-studentId');
+            let class_room_id = $('#print_'+index).attr('data-classRoomId');
+            let date_time = $('#filter_datetime').val();
+
+            window.open(`${url}?student_id=${student_id}&class_room_id=${class_room_id}&datetime=${date_time}`, '_blank');
         }
     </script>
 @endsection

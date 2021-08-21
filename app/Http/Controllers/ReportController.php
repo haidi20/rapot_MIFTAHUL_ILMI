@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Absen;
+use App\Models\AbsenType;
 use App\Models\ClassRoom;
 use App\Models\LogError;
 use App\Models\Quiz;
@@ -44,5 +46,31 @@ class ReportController extends Controller
         // dd(DB::getQueryLog());
 
         return response()->json( [ "rows" => $data, "data" => $iTbl, "total" => $total, "offset" => request('offset'), "limit" => request('limit'), "search" => request('search')]);
+    }
+
+    public function print() {
+        $datetime = Carbon::parse(request('datetime'));
+
+        return $quizStudent = QuizStudent::where(['quiz_student.student_id' => request('student_id')])
+                                ->whereMonth('quiz_student.created_at', $datetime)
+                                ->whereYear('quiz_student.created_at', $datetime)
+                                ->leftJoin('student', 'student.id', '=', 'quiz_student.student_id')
+                                ->get();
+
+        $countAbsen = AbsenType::all()->map(function($row) use($datetime){
+            $query = Absen::where(['absen_type_id' => $row->id, 'student_id' => request('student_id')])
+                        ->whereMonth('created_at', $datetime)
+                        ->whereYear('created_at', $datetime)
+                        ->count();
+
+            $result = (object) [
+                "absen_type_name" => $row->name_absen_type,
+                "count" => $query,
+            ];
+
+            return $result;
+        });
+
+        return view('report_print', compact('quizStudent', 'countAbsen'));
     }
 }

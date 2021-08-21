@@ -37,6 +37,7 @@ class QuizStudentController extends Controller
         if(request('quiz_id') != null && request('class_room_id') != null) {
             $quizDate = QuizDate::where(['quiz_id' => request('quiz_id'), 'class_room_id' => request('class_room_id')])
                                 ->whereMonth('created_at', Carbon::parse(request('datetime')))
+                                ->whereYear('created_at', Carbon::parse(request('datetime')))
                                 ->get();
             $iTbl = QuizStudent::select('quiz_student.*', 'student.name_student', 'quiz.name_quiz', 'class_room.name_class_room')
                                 ->orderBy('quiz.name_quiz');
@@ -47,7 +48,8 @@ class QuizStudentController extends Controller
             $iTbl = $iTbl->where([
                 'quiz_id' => request('quiz_id'),
                 'class_room_id' => request('class_room_id'),
-            ])->whereMonth('quiz_student.created_at', Carbon::parse(request('datetime')));
+            ])->whereMonth('quiz_student.created_at', Carbon::parse(request('datetime')))
+            ->whereYear('quiz_student.created_at', Carbon::parse(request('datetime')));
 
             $total = $iTbl->count();
 
@@ -143,8 +145,6 @@ class QuizStudentController extends Controller
             DB::beginTransaction();
 
             foreach(request('students') as $index => $item) {
-                $quizStudent = DB::table("quiz_student");
-                $id = (string) Uuid::generate();
                 $checkStudentOtherClass = $quizStudent->where(['student_id' => $item, "quiz_id" => request('quiz_id')])->first();
 
                 if($checkStudentOtherClass) {
@@ -152,6 +152,11 @@ class QuizStudentController extends Controller
 
                     return redirect()->route('quizStudent');
                 }
+            }
+
+            foreach(request('students') as $index => $item) {
+                $quizStudent = DB::table("quiz_student");
+                $id = (string) Uuid::generate();
 
                 $quizStudent->insert(array(
                     "id" => $id,
@@ -165,9 +170,6 @@ class QuizStudentController extends Controller
             foreach(request('date_absen') as $index => $item) {
                 if($item != null) {
                     $id = (string) Uuid::generate();
-
-                    $data = DB::table("quiz_date")
-                                ->where(["quiz_id" => request('quiz_id'), "class_room_id" => request('class_room_id')]);
 
                     DB::table("quiz_date")
                     ->insert([

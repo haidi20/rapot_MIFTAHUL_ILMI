@@ -72,4 +72,5 @@ Route::group(['prefix' => 'absen'], function() {
 Route::group(['prefix' => 'report'], function() {
     Route::get('', 'ReportController@index');
     Route::get('ajaxRead', 'ReportController@ajaxRead');
+    Route::get('print', 'ReportController@print');
 });
