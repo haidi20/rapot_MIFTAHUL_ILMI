@@ -19,7 +19,7 @@ class MasterQuizController extends Controller
     }
 
     public function ajaxRead() {
-        $iTbl = Quiz::orderBy('name_quiz');
+        $iTbl = Quiz::orderBy('description');
 
         if(request("search") != null) {
             $iTbl = $iTbl->where('is_deleted', 0)

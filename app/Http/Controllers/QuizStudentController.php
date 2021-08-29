@@ -40,6 +40,7 @@ class QuizStudentController extends Controller
                                 ->whereYear('created_at', Carbon::parse(request('datetime')))
                                 ->get();
             $iTbl = QuizStudent::select('quiz_student.*', 'student.name_student', 'quiz.name_quiz', 'class_room.name_class_room')
+                                ->where('student.is_deleted', 0)
                                 ->orderBy('quiz.name_quiz');
             $iTbl = $iTbl->leftJoin('quiz', 'quiz.id', '=', 'quiz_student.quiz_id');
             $iTbl = $iTbl->leftJoin('class_room', 'class_room.id', '=', 'quiz_student.class_room_id');
