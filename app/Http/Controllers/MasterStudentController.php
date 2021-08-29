@@ -58,10 +58,11 @@ class MasterStudentController extends Controller
             $student->insert(array(
                 "id" => $id,
                 "name_student" => request('name_student'),
+                "nis" => request('nis'),
                 "created_at" => Carbon::now(),
             ));
 
-            flash_message('message', 'success', 'check', 'Data telah dibuat');
+            $this->flash_message('message', 'success', 'check', 'Data telah dibuat');
 
             DB::commit();
             // all good
@@ -74,7 +75,7 @@ class MasterStudentController extends Controller
                 "created_at" => Carbon::now(),
             ]);
 
-            flash_message('message', 'danger', 'close', 'Data gagal dibuat');
+            $this->flash_message('message', 'danger', 'close', 'Data gagal dibuat');
         }
 
         return redirect()->route('masterStudent');
@@ -88,15 +89,16 @@ class MasterStudentController extends Controller
 
             $student->update(array(
                 "name_student" => request('name_student'),
+                "nis" => request('nis'),
                 "updated_at" => Carbon::now(),
             ));
 
-            flash_message('message', 'info', 'check', 'Data tellah diperbaharui');
+            $this->flash_message('message', 'info', 'check', 'Data tellah diperbaharui');
             DB::commit();
             // all good
         } catch (\Exception $e) {
             DB::rollback();
-            flash_message('message', 'danger', 'close', 'Data gagal diperbaharui');
+            $this->flash_message('message', 'danger', 'close', 'Data gagal diperbaharui');
         }
 
         return redirect()->route('masterStudent');
@@ -109,7 +111,7 @@ class MasterStudentController extends Controller
             "is_deleted" => 1,
         ));
 
-        flash_message('message', 'success', 'check', 'Data telah dihapus');
+        $this->flash_message('message', 'success', 'check', 'Data telah dihapus');
         return redirect()->route('masterStudent');
     }
 }

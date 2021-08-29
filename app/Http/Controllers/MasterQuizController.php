@@ -56,12 +56,12 @@ class MasterQuizController extends Controller
 
             $quiz->insert(array(
                 "id" => $id,
-                "name_quiz" => request('name_quiz'),
+                // "name_quiz" => request('name_quiz'),
                 "description" => request('description'),
                 "created_at" => Carbon::now(),
             ));
 
-            flash_message('message', 'success', 'check', 'Data telah dibuat');
+            $this->flash_message('message', 'success', 'check', 'Data telah dibuat');
 
             DB::commit();
             // all good
@@ -74,7 +74,7 @@ class MasterQuizController extends Controller
                 "created_at" => Carbon::now(),
             ]);
 
-            flash_message('message', 'danger', 'close', 'Data gagal dibuat');
+            $this->flash_message('message', 'danger', 'close', 'Data gagal dibuat');
         }
 
         return redirect()->route('masterQuiz');
@@ -87,17 +87,17 @@ class MasterQuizController extends Controller
             $quiz = DB::table("quiz")->where('id', $id);
 
             $quiz->update(array(
-                "name_quiz" => request('name_quiz'),
+                // "name_quiz" => request('name_quiz'),
                 "description" => request('description'),
                 "updated_at" => Carbon::now(),
             ));
 
-            flash_message('message', 'info', 'check', 'Data telah diperbaharui');
+            $this->flash_message('message', 'info', 'check', 'Data telah diperbaharui');
             DB::commit();
             // all good
         } catch (\Exception $e) {
             DB::rollback();
-            flash_message('message', 'danger', 'close', 'Data gagal diperbaharui');
+            $this->flash_message('message', 'danger', 'close', 'Data gagal diperbaharui');
         }
 
         return redirect()->route('masterQuiz');
@@ -110,7 +110,7 @@ class MasterQuizController extends Controller
             "is_deleted" => 1,
         ));
 
-        flash_message('message', 'success', 'check', 'Data telah dihapus');
+        $this->flash_message('message', 'success', 'check', 'Data telah dihapus');
         return redirect()->route('masterQuiz');
     }
 }

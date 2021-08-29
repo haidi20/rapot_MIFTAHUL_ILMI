@@ -37,4 +37,19 @@ class Controller extends BaseController
             "remark" => $remark,
         ], 500);
     }
+
+    protected function flash_message($session, $type='info', $icon='', $messages='', $close=true)
+    {
+        $button = ($close) ? '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' : '';
+        $icon = ($icon != '') ? $this->fa($icon).'&nbsp; ' : '';
+
+        session()->flash($session, '<div class="alert alert-dismissible alert-'.$type.'">
+                                        '.$icon.' '.$messages.' '.$button.'
+                                    </div>');
+    }
+
+    protected function fa($icon='pencil', $addClass='', $style='')
+    {
+        return '<i class="fa fa-'.$icon.' '.$addClass.'" style="'.$style.'"></i>';
+    }
 }

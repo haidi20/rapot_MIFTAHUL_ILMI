@@ -5,12 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Absen;
 use App\Models\AbsenType;
 use App\Models\ClassRoom;
-use App\Models\LogError;
-use App\Models\Quiz;
 use App\Models\QuizStudent;
 use App\Models\Student;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Webpatser\Uuid\Uuid;
 
@@ -41,7 +38,7 @@ class ReportController extends Controller
         }
 
         $total = $iTbl->count();
-        $data = $iTbl->where('quiz_student.is_deleted', 0)->skip(request('offset'))->take(request('limit'))->get();
+        $data = $iTbl->where('quiz_student.is_deleted', 0)->skip(request('offset'))->take(request('limit'))->groupBy('quiz_student.student_id')->get();
 
         // dd(DB::getQueryLog());
 

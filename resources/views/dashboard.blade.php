@@ -17,7 +17,7 @@
                         <div class="row align-items-center">
                             <div class="col">
                                 <p class="m-b-5">Peserta</p>
-                                <h4 class="m-b-0"> 5 </h4>
+                                <h4 class="m-b-0"> {{$countStudent}} </h4>
                             </div>
                             <div class="col col-auto text-right">
                                 <i class="feather icon-user f-50 text-c-yellow"></i>
@@ -32,7 +32,7 @@
                         <div class="row align-items-center">
                             <div class="col">
                                 <p class="m-b-5">Kelas</p>
-                                <h4 class="m-b-0"> 9 </h4>
+                                <h4 class="m-b-0"> {{$countClass}} </h4>
                             </div>
                             <div class="col col-auto text-right">
                                 {{-- <i class="feather icon-class f-50 text-c-green"></i> --}}

@@ -112,31 +112,31 @@ class QuizStudentController extends Controller
         $checkDataQuizStudent = QuizStudent::where(['class_room_id' => request('class_room_id'), 'quiz_id' => request('quiz_id')])->first();
 
         if($checkDataQuizStudent) {
-            flash_message('message', 'danger', 'close', 'Maaf, kelas dan kuis sudah ada');
+            $this->flash_message('message', 'danger', 'close', 'Maaf, kelas dan kuis sudah ada');
 
             return redirect()->route('quizStudent');
         }
 
         if($this->is_array_empty(request('students'))) {
-            flash_message('message', 'danger', 'close', 'Maaf, harus ada peserta');
+            $this->flash_message('message', 'danger', 'close', 'Maaf, harus ada peserta');
 
             return redirect()->route('quizStudent');
         }
 
         if($this->is_array_empty(request('date_absen'))) {
-            flash_message('message', 'danger', 'close', 'Maaf, inputan pertemuan tidak boleh kosong');
+            $this->flash_message('message', 'danger', 'close', 'Maaf, inputan pertemuan tidak boleh kosong');
 
             return redirect()->route('quizStudent');
         }
 
         if(request('class_room_id') == null) {
-            flash_message('message', 'danger', 'close', 'Maaf, harus pilih kelas');
+            $this->flash_message('message', 'danger', 'close', 'Maaf, harus pilih kelas');
 
             return redirect()->route('quizStudent');
         }
 
         if(request('quiz_id') == null) {
-            flash_message('message', 'danger', 'close', 'Maaf, harus pilih kuis');
+            $this->flash_message('message', 'danger', 'close', 'Maaf, harus pilih kuis');
 
             return redirect()->route('quizStudent');
         }
@@ -145,10 +145,10 @@ class QuizStudentController extends Controller
             DB::beginTransaction();
 
             foreach(request('students') as $index => $item) {
-                $checkStudentOtherClass = $quizStudent->where(['student_id' => $item, "quiz_id" => request('quiz_id')])->first();
+                $checkStudentOtherClass = quizStudent::where(['student_id' => $item, "quiz_id" => request('quiz_id')])->first();
 
                 if($checkStudentOtherClass) {
-                    flash_message('message', 'danger', 'close', 'Maaf, peserta ini sudah ada di kelas lain');
+                    $this->flash_message('message', 'danger', 'close', 'Maaf, peserta ini sudah ada di kelas lain');
 
                     return redirect()->route('quizStudent');
                 }
@@ -182,7 +182,7 @@ class QuizStudentController extends Controller
                 }
             }
 
-            flash_message('message', 'success', 'check', 'Data berhasil dikirim');
+            $this->flash_message('message', 'success', 'check', 'Data berhasil dikirim');
 
             DB::commit();
             // all good
@@ -196,7 +196,7 @@ class QuizStudentController extends Controller
                 "created_at" => Carbon::now(),
             ]);
 
-            flash_message('message', 'danger', 'close', 'Data gagal dikirim');
+            $this->flash_message('message', 'danger', 'close', 'Data gagal dikirim');
         }
 
         return redirect()->route('quizStudent');
@@ -209,7 +209,7 @@ class QuizStudentController extends Controller
             "is_deleted" => 1,
         ]);
 
-        flash_message('message', 'success', 'check', 'Data telah dihapus');
+        $this->flash_message('message', 'success', 'check', 'Data telah dihapus');
         return redirect()->route('quizStudent');
     }
 

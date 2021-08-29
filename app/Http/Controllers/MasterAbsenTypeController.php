@@ -84,7 +84,7 @@ class MasterAbsenTypeController extends Controller
                 "created_at" => Carbon::now(),
             ));
 
-            flash_message('message', 'success', 'check', 'Data telah dikirim');
+            $this->flash_message('message', 'success', 'check', 'Data telah dikirim');
 
             DB::commit();
             // all good
@@ -97,7 +97,7 @@ class MasterAbsenTypeController extends Controller
                 "created_at" => Carbon::now(),
             ]);
 
-            flash_message('message', 'danger', 'close', 'Data gagal dikirim');
+            $this->flash_message('message', 'danger', 'close', 'Data gagal dikirim');
         }
 
         return redirect()->route('masterAbsenType');
@@ -115,12 +115,12 @@ class MasterAbsenTypeController extends Controller
                 "updated_at" => Carbon::now(),
             ));
 
-            flash_message('message', 'info', 'check', 'Data telah diperbaharui');
+            $this->flash_message('message', 'info', 'check', 'Data telah diperbaharui');
             DB::commit();
             // all good
         } catch (\Exception $e) {
             DB::rollback();
-            flash_message('message', 'danger', 'close', 'Data gagal diperbaharui');
+            $this->flash_message('message', 'danger', 'close', 'Data gagal diperbaharui');
         }
 
         return redirect()->route('masterAbsenType');
@@ -133,7 +133,7 @@ class MasterAbsenTypeController extends Controller
             "is_deleted" => 1,
         ));
 
-        flash_message('message', 'success', 'check', 'Data telah dihapus');
+        $this->flash_message('message', 'success', 'check', 'Data telah dihapus');
         return redirect()->route('masterAbsenType');
     }
 }

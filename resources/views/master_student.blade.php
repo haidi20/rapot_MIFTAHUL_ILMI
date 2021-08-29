@@ -22,6 +22,12 @@
                                 <div class="col-sm-12 col-md-12">
                                     <div class="form-group row custom-form">
                                         <div class="col-sm-12 col-md-12">
+                                            <label class="block"> NIS </label>
+                                            <input class="form-control" type="text" name="nis" id="nis" value="{{old('nis')}}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-12 col-md-12">
                                             <label class="block"> Nama Peserta </label>
                                             <input class="form-control" type="text" name="name_student" id="name_student" value="{{old('name_student')}}">
                                         </div>
@@ -54,11 +60,12 @@
 
 @section('script')
     <script>
-        var data = [];
-        var form = $('#form');
-        var btnSave = $('#btnSave');
-        var tblStudent = $('#student');
-        var nameClassRoom = $('#name_student');
+        let data = [];
+        let form = $('#form');
+        let btnSave = $('#btnSave');
+        let nis = $('#nis');
+        let tblStudent = $('#student');
+        let nameStudent = $('#name_student');
 
         $(document).ready(function() {
             readData();
@@ -68,7 +75,8 @@
             data = tblStudent.bootstrapTable('getData');
             form.attr('action', $('#edit_'+index).attr('data-link'));
 
-            nameClassRoom.val(data[index].name_student);
+            nis.val(data[index].nis);
+            nameStudent.val(data[index].name_student);
         }
 
         function remove(index) {
@@ -92,10 +100,6 @@
             });
         }
 
-        function print(index) {
-            console.log(index);
-        }
-
         function readData() {
             tblStudent.bootstrapTable({
                 url: "{{url('/master/student/ajaxRead')}}",
@@ -115,10 +119,9 @@
                         width: 10,
                         title: 'Action',
                         formatter: function (value, row, index) {
-                            var str = '';
+                            let str = '';
                             str += `<a type="button" id="edit_${index}" data-link="{{url('master/student/update')}}/${row.id}" onclick="edit('${index}')" class="btn btn-info btn-xsm"><i class="fas fa-pencil-alt"></i></i></a> &nbsp;`;
                             str += `<a type="button" id="remove_${index}" data-link="{{url('master/student/delete')}}/${row.id}" onclick="remove('${index}')" class="btn btn-danger btn-xsm"><i class="fas fa-trash"></i></a>`;
-                            str += `<a type="button" id="print_${index}" data-link="{{url('master/student/print')}}/${row.id}" onclick="print('${index}')" class="btn btn-success btn-xsm"><i class="fas fa-file"></i></a>`;
 
                             return str;
                         },
@@ -126,6 +129,10 @@
                     {
                         field: 'name_student',
                         title: 'Nama Peserta',
+                    },
+                    {
+                        field: 'nis',
+                        title: 'NIS',
                     },
                 ]
             });

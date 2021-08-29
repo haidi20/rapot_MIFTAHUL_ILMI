@@ -81,13 +81,13 @@
                                     </div>
                                     <div class="form-group row">
                                         <div class="col-sm-12 col-md-12">
-                                            <label class="block"> Kuis </label>
+                                            <label class="block"> Tingkatan </label>
                                             <select name="quiz_id" id="quiz_id" class="form-control select2 form-control-inverse">
-                                                <option value="">Pilih Kuis</option>
+                                                <option value="">Pilih Tingkatan</option>
                                                 @foreach ($quiz as $index => $item )
                                                     <option
                                                         value="{{$item->id}}">
-                                                        {{$item->name_quiz}}
+                                                        {{$item->description}}
                                                     </option>
                                                 @endforeach
                                             </select>
@@ -151,13 +151,13 @@
                                         </select>
                                     </div>
                                     <div class="col-sm-12 col-md-3">
-                                        <label class="block"> Kuis </label>
+                                        <label class="block"> Tingkatan </label>
                                         <select name="filter_quiz_id" id="filter_quiz" class="form-control form-control-inverse">
-                                            <option value="">Pilih Kuis</option>
+                                            <option value="">Pilih Tingkatan</option>
                                             @foreach ($quiz as $index => $item )
                                                 <option
                                                     value="{{$item->id}}">
-                                                    {{$item->name_quiz}}
+                                                    {{$item->description}}
                                                 </option>
                                             @endforeach
                                         </select>

@@ -20,15 +20,15 @@
                             {{ csrf_field() }}
                             <div class="row">
                                 <div class="col-sm-12 col-md-12">
-                                    <div class="form-group row custom-form">
+                                    {{-- <div class="form-group row custom-form">
                                         <div class="col-sm-12 col-md-12">
-                                            <label class="block"> Nama Kuis </label>
+                                            <label class="block"> Nama  </label>
                                             <input class="form-control" type="text" name="name_quiz" id="name_quiz" value="{{old('name_quiz')}}" placeholder="contoh: Kuis 1">
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <div class="form-group row">
                                         <div class="col-sm-12 col-md-12">
-                                            <label class="block"> Penjelasan </label>
+                                            <label class="block"> Nama Tingkatan </label>
                                             <input class="form-control" type="text" name="description" id="description" value="{{old('description')}}" placeholder="contoh: MUSTAWA AWWAL">
                                         </div>
                                     </div>
@@ -47,7 +47,7 @@
                 {!! session()->get('message') !!}
                 <div class="card">
                     <div class="card-body">
-                        <h5> Data Kuis </h5>
+                        <h5> Data Tingkatan </h5>
 
                         <table id="master_quiz"></table>
                     </div>
@@ -60,11 +60,12 @@
 
 @section('script')
     <script>
-        var data = [];
-        var form = $('#form');
-        var btnSave = $('#btnSave');
-        var masterQuiz = $('#master_quiz');
-        var nameClassRoom = $('#name_quiz');
+        let data = [];
+        let form = $('#form');
+        let btnSave = $('#btnSave');
+        let masterQuiz = $('#master_quiz');
+        let nameClassRoom = $('#name_quiz');
+        let description = $('#description');
 
         $(document).ready(function() {
             readData();
@@ -75,13 +76,14 @@
             form.attr('action', $('#edit_'+index).attr('data-link'));
 
             nameClassRoom.val(data[index].name_quiz);
+            description.val(data[index].description);
         }
 
         function remove(index) {
             data = masterQuiz.bootstrapTable('getData');
 
             Swal.fire({
-                title: 'Yakin hapus data kelas <b>'+data[index].name_quiz+'</b> ?',
+                title: 'Yakin hapus data tingkatan <b>'+data[index].description+'</b> ?',
                 showDenyButton: false,
                 icon: 'question',
                 showCancelButton: true,
@@ -117,20 +119,20 @@
                         width: 10,
                         title: 'Action',
                         formatter: function (value, row, index) {
-                            var str = '';
+                            let str = '';
                             str += `<a type="button" id="edit_${index}" data-link="{{url('master/quiz/update')}}/${row.id}" onclick="edit('${index}')" class="btn btn-info btn-xsm"><i class="fas fa-pencil-alt"></i></i></a> &nbsp;`;
                             str += `<a type="button" id="remove_${index}" data-link="{{url('master/quiz/delete')}}/${row.id}" onclick="remove('${index}')" class="btn btn-danger btn-xsm"><i class="fas fa-trash"></i></a>`;
 
                             return str;
                         },
                     },
-                    {
-                        field: 'name_quiz',
-                        title: 'Nama Kuis',
-                    },
+                    // {
+                    //     field: 'name_quiz',
+                    //     title: 'Nama Kuis',
+                    // },
                     {
                         field: 'description',
-                        title: 'Penjelasan',
+                        title: 'Nama Tingkatan',
                     },
                 ]
             });
