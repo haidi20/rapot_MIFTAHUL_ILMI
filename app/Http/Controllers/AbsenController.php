@@ -71,12 +71,12 @@ class AbsenController extends Controller
 
                 Absen::updateOrCreate(
                     [
-                        "student_id" => $item['student_id'],
-                        "quiz_student_id" => $item['quiz_student_id'],
-                        "date_absen_id" => $item['id'],
+                        "student_id" => $item->student_id,
+                        "quiz_student_id" => $item->quiz_student_id,
+                        "date_absen_id" => $item->id,
                     ],
                     [
-                        "absen_type_id" => $item['absen_type_id'],
+                        "absen_type_id" => $item->absen_type_id,
                     ]
                 );
             }

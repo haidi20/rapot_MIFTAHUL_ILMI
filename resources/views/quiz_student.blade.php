@@ -337,6 +337,7 @@
                                             && item.date_absen_id == state.dataQuizDate[indexQuizDate].id);
 
             if(checkDataAbsen) {
+                console.log('ada datanya');
                 state.dataAbsen
                     .map((item, index) => {
                         if(item.student_id == student_id && item.date_absen_id == state.dataQuizDate[indexQuizDate].id) {
@@ -351,6 +352,7 @@
                         }
                     });
             }else {
+                console.log('kosong');
                 // console.log(state.dataQuizDate);
 
                 state.dataAbsen = [
@@ -366,7 +368,7 @@
             }
 
 
-            // console.table(state.dataAbsen);
+            console.log(state.dataAbsen);
         }
 
         // untuk resource tambah form student
@@ -415,34 +417,6 @@
                     console.log(error);
                 }
             });
-        }
-
-        function addFormStudent() {
-            let newFormStudent = '';
-            let optionNewFormStudent = '';
-            let countFormStudent = state.countFormStudent + 1;
-            state.countFormStudent = countFormStudent;
-
-            optionNewFormStudent += '<option> Pilih Peserta </option>';
-            $.each(state.dataStudent, function(index, item) {
-                optionNewFormStudent += '<option value="'+item.id+'"> '+item.name_student+' </option>';
-            });
-
-            newFormStudent += '<div class="form-group row multi-student" id="form_student_'+countFormStudent+'">';
-                newFormStudent +='<div class="col-sm-12 col-md-12">';
-                    newFormStudent +='<label class="block"> Pilih Peserta </label> <i onclick="removeFormStudent('+countFormStudent+')" class="fas fa-close text-danger btn-delete-student"></i>';
-                    newFormStudent +='<select name="students[]" class="form-control select2 form-control-inverse">';
-                        newFormStudent += optionNewFormStudent;
-                    newFormStudent +='</select>';
-                    // newFormStudent +='<button type="submit" class="btn btn-sm btn-danger btn-delete-student" onclick="removeFormStudent('+countFormStudent+')">';
-                    //     newFormStudent += '<i class="fas fa-close"></i>';
-                    // newFormStudent +='</button>';
-                newFormStudent +='</div>';
-            newFormStudent +='</div>';
-
-            multiStudent.after(newFormStudent);
-
-            $('.select2').select2();
         }
 
         function removeFormStudent(index) {
@@ -541,6 +515,8 @@
             let studentId = dataQuizStudent.student_id;
             let dataAbsen = state.dataAbsen.filter(item => item.student_id == studentId);
 
+            // console.log(dataAbsen);
+
             $.ajax({
                 url: "{{url('absen/ajaxSave')}}",
                 data: JSON.stringify({
@@ -549,6 +525,7 @@
                     "quiz_id": state.quiz_id,
                     "class_room_id": state.class_room_id,
                     "student_id": studentId,
+                    "datetime": filterDatetime.val(),
                 }),
                 dataType: "JSON",
                 contentType: "application/json",

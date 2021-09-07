@@ -65,8 +65,8 @@ class QuizStudentController extends Controller
                 $row->absens = QuizDate::leftjoin('absen', 'quiz_date.id', '=', 'absen.date_absen_id')
                                         ->where('absen.student_id', $row->student_id)
                                         ->where('absen.quiz_student_id', $row->id)
-                                        ->whereMonth('quiz_date.created_at', Carbon::now())
-                                        ->whereYear('quiz_date.created_at', Carbon::now())
+                                        ->whereMonth('quiz_date.created_at', Carbon::parse(request('datetime')))
+                                        ->whereYear('quiz_date.created_at', Carbon::parse(request('datetime')))
                                         ->orderBy('date')
                                         ->get();
 
@@ -203,17 +203,6 @@ class QuizStudentController extends Controller
             $this->flash_message('message', 'danger', 'close', 'Data gagal dikirim');
         }
 
-        return redirect()->route('quizStudent');
-    }
-
-    public function delete($id) {
-        $quizStudent = DB::table("quiz_student")->where('id', $id);
-
-        $quizStudent->update([
-            "is_deleted" => 1,
-        ]);
-
-        $this->flash_message('message', 'success', 'check', 'Data telah dihapus');
         return redirect()->route('quizStudent');
     }
 

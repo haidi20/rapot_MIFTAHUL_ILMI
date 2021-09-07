@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Absen;
 use App\Models\ClassRoom;
 use App\Models\LogError;
 use App\Models\Quiz;
@@ -30,10 +31,10 @@ class StudentActiveController extends Controller
         $offset = request('offset');
 
         if(request('quiz_id') != null && request('class_room_id') != null) {
-            $iTbl = QuizStudent::select('quiz_student.*', 'student.name_student', 'student.nis', 'class_room.name_class_room')
+            $iTbl = QuizStudent::select('quiz_student.*', 'student.name_student', 'quiz.description', 'student.nis', 'class_room.name_class_room')
                                 ->where('student.is_deleted', 0)
                                 ->orderBy('class_room.name_class_room');
-            // $iTbl = $iTbl->leftJoin('quiz', 'quiz.id', '=', 'quiz_student.quiz_id');
+            $iTbl = $iTbl->leftJoin('quiz', 'quiz.id', '=', 'quiz_student.quiz_id');
             $iTbl = $iTbl->leftJoin('class_room', 'class_room.id', '=', 'quiz_student.class_room_id');
             $iTbl = $iTbl->leftJoin('student', 'student.id', '=', 'quiz_student.student_id');
 
@@ -91,7 +92,8 @@ class StudentActiveController extends Controller
                 $checkStudentOtherClass = quizStudent::where([
                     'student_id' => $item,
                     "quiz_id" => request('quiz_id'),
-                    "class_room_id" => request('class_room_id')
+                    "class_room_id" => request('class_room_id'),
+                    "is_deleted" => 0,
                 ])
                 ->whereMonth('quiz_student.created_at', '=', Carbon::parse(request('datetime'))->format('m'))
                 ->whereYear('quiz_student.created_at', '=', Carbon::parse(request('datetime'))->format('Y'))
@@ -136,6 +138,23 @@ class StudentActiveController extends Controller
 
         return redirect()->route('studentActive.index');
     }
+
+    public function deleteStudent($id) {
+        $absen = Absen::where('quiz_student_id', $id);
+        $quizStudent = QuizStudent::where('id', $id);
+
+        $absen->update([
+            "is_deleted" => 1,
+        ]);
+
+        $quizStudent->update([
+            "is_deleted" => 1,
+        ]);
+
+        $this->flash_message('message', 'success', 'check', 'Data telah dihapus');
+        return redirect()->route('studentActive.index');
+    }
+
 
 
     // helper

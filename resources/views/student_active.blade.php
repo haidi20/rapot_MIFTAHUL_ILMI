@@ -328,6 +328,27 @@
             });
         }
 
+        function remove(index) {
+            data = tblStudentActive.bootstrapTable('getData');
+
+            Swal.fire({
+                title: 'Yakin hapus peserta <b>'+data[index].name_student+'</b> di kelas <b>'+data[index].name_class_room+'</b> dan tingkat <b>'+data[index].description+'</b> ?',
+                showDenyButton: false,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: `Delete`,
+                confirmButtonColor: 'red',
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    location.href = `{{url('student-active/delete')}}/${data[index].id}`;
+                    // Swal.fire('Data terhapus!', '', 'success')
+                } else if (result.isDenied) {
+                    Swal.fire('Data tidak dihapus', '', 'info');
+                }
+            });
+        }
+
         function loadDataStudent() {
             $.ajax({
                 url: "{{url('master/student/ajaxReadTypeahead')}}",
