@@ -16,13 +16,12 @@ class QuizStudentController extends Controller
 {
 
     public function index() {
-        $action = route('quizStudent.store');
         $quiz = Quiz::where('is_deleted', 0)->get();
         $student = Student::where('is_deleted', 0)->get();
         $classRoom = ClassRoom::where('is_deleted', 0)->get();
         // return $totalDataQuizStudent = QuizStudent::where('is_deleted', 0)->count();
 
-        return view('quiz_student', compact('action', 'classRoom', 'quiz', 'student'));
+        return view('quiz_student', compact('classRoom', 'quiz', 'student'));
     }
 
     public function ajaxRead() {
@@ -229,5 +228,5 @@ class QuizStudentController extends Controller
 
             return false;
         }
-      }
+    }
 }
