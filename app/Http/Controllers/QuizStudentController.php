@@ -63,15 +63,22 @@ class QuizStudentController extends Controller
             $data = $iTbl->where('quiz_student.is_deleted', 0)->skip($offset)->take(request('limit'))->get();
 
             $data = $data->map(function($row) {
-                $row->absens = DB::select(DB::raw("
-                    SELECT *, STR_TO_DATE(date, '%m/%d') as custome_date
-                    FROM quiz_date
-                    LEFT JOIN absen ON quiz_date.id = absen.date_absen_id
-                    WHERE absen.student_id = '$row->student_id'
-                    AND absen.quiz_student_id = '$row->id'
-                    ORDER BY custome_date
-                "));
+                // $row->absens = DB::select(DB::raw("
+                //     SELECT *, STR_TO_DATE(date, '%m/%d') as custome_date
+                //     FROM quiz_date
+                //     LEFT JOIN absen ON quiz_date.id = absen.date_absen_id
+                //     WHERE absen.student_id = '$row->student_id'
+                //     AND absen.quiz_student_id = '$row->id'
+                //     ORDER BY custome_date
+                // "));
 
+                $row->absens = QuizDate::leftjoin('absen', 'quiz_date.id', '=', 'absen.date_absen_id')
+                                        ->where('absen.student_id', $row->student_id)
+                                        ->where('absen.quiz_student_id', $row->id)
+                                        ->whereMonth('quiz_date.created_at', Carbon::now())
+                                        ->whereYear('quiz_date.created_at', Carbon::now())
+                                        ->orderBy('date')
+                                        ->get();
 
                 return $row;
             });
@@ -110,7 +117,13 @@ class QuizStudentController extends Controller
     public function store() {
         // return request()->all();
 
-        $checkDataQuizStudent = QuizStudent::where(['class_room_id' => request('class_room_id'), 'quiz_id' => request('quiz_id')])->first();
+        $checkDataQuizStudent = QuizStudent::where([
+                'class_room_id' => request('class_room_id'),
+                'quiz_id' => request('quiz_id'),
+            ])
+            ->whereMonth('created_at', Carbon::now())
+            ->whereYear('created_at', Carbon::now())
+            ->first();
 
         if($checkDataQuizStudent) {
             $this->flash_message('message', 'danger', 'close', 'Maaf, kelas dan kuis sudah ada');

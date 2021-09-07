@@ -44,5 +44,12 @@
             @endforeach
         </table>
     </div>
+    <div>
+        Penguji / mu'allimah : nama peserta
+    </div>
+    <div>
+        <p>Skala nilai: </p>
+        <p>60 - 70 = MAQBUL 71 - 80 = JAYYID 81 - 90 = JAYYID JIDDAN 91 - 100 = MUMTAZAH</p>
+    </div>
 </body>
 </html>
