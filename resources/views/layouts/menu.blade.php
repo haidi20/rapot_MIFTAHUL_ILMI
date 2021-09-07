@@ -37,6 +37,12 @@
                     </li>
                 </ul>
             </li>
+            <li class="{{ request()->is('/student-active') ? 'active' : '' }}">
+                <a href="{{url('student-active')}}">
+                    <span class="pcoded-micon"><i class="feather icon-user"></i></span>
+                    <span class="pcoded-mtext">Peserta Aktif</span>
+                </a>
+            </li>
             <li class="{{ request()->is('/quiz-student') ? 'active' : '' }}">
                 <a href="{{url('quiz-student')}}">
                     <span class="pcoded-micon"><i class="feather icon-edit-1"></i></span>

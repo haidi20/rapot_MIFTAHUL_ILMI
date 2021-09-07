@@ -51,10 +51,9 @@
 @section('content')
     <div class="page-body">
         <div class="row">
-            <div class="col-sm-12 col-md-3">
+            {{-- <div class="col-sm-12 col-md-3">
                 <div class="card">
                     <div class="card-body">
-                        {{-- <h5>Masukkan Data Murid</h5> --}}
 
                         <form action="{{ $action }}" method="post" id="form" >
                             {{ csrf_field() }}
@@ -101,7 +100,6 @@
                                             </div>
                                         </div>
                                     @endfor
-                                    {{-- <div class="multi-student"></div> --}}
                                     <div class="form-group row multi-student">
                                         <div class="col-sm-12 col-md-12">
                                             <label class="block"> Peserta </label>
@@ -126,8 +124,8 @@
                         </form>
                     </div>
                 </div>
-            </div>
-            <div class="col-sm-12 col-md-9">
+            </div> --}}
+            <div class="col-sm-12 col-md-12">
                 <div class="row">
                     <div class="col-md-12">
                         {!! session()->get('message') !!}
@@ -562,7 +560,7 @@
                         toast: true,
                         position: 'top-end',
                         showConfirmButton: false,
-                        timer: 3000,
+                        timer: 2000,
                         timerProgressBar: true,
                     });
 
@@ -589,6 +587,7 @@
             });
         }
 
+        // menampilkan judul kolom tanggal kuis
         function handleQuizDate(data, listDateAbsen) {
             if(data.quizDate.length > 0) {
                 quizStudentTable.find('thead > tr:nth-child(2)').empty();

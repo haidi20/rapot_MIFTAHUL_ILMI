@@ -54,6 +54,11 @@ Route::group(['prefix' => 'master'], function() {
     });
 });
 
+Route::group(['prefix' => 'student-active'], function() {
+    Route::get('/', 'StudentActiveController@index');
+    Route::get('ajaxRead', 'StudentActiveController@ajaxRead');
+});
+
 Route::group(['prefix' => 'quiz-student'], function() {
     Route::get('', 'QuizStudentController@index')->name("quizStudent");
     Route::get('ajaxRead', 'QuizStudentController@ajaxRead');
