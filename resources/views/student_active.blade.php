@@ -83,13 +83,13 @@
                                                     <a href="#" type="button" class="btn btn-sm btn-info" onclick="addFormStudent()">Tambah Peserta</a>
                                                 </div>
                                             </div>
-                                            <input type="hidden" name="class_room_id" id="class_room_id">
-                                            <input type="hidden" name="quiz_id" id="quiz_id">
+                                            <input type="hidden" name="class_room_id" class="class_room_id">
+                                            <input type="hidden" name="quiz_id" class="quiz_id">
                                             <input type="hidden" name="datetime" id="datetime">
                                             {{-- <div class="form-group row">
                                                 <div class="col-sm-12 col-md-12">
                                                     <label class="block"> Kelas </label>
-                                                    <select name="class_room_id" id="class_room_id" class="form-control select2 form-control-inverse">
+                                                    <select name="class_room_id" class="form-control select2 form-control-inverse">
                                                         <option value="">Pilih Kelas</option>
                                                         @foreach ($classRoom as $index => $item )
                                                             <option
@@ -103,7 +103,7 @@
                                             <div class="form-group row">
                                                 <div class="col-sm-12 col-md-12">
                                                     <label class="block"> Tingkatan </label>
-                                                    <select name="quiz_id" id="quiz_id" class="form-control select2 form-control-inverse">
+                                                    <select name="quiz_id" class="form-control select2 form-control-inverse">
                                                         <option value="">Pilih Tingkatan</option>
                                                         @foreach ($quiz as $index => $item )
                                                             <option
@@ -157,10 +157,12 @@
                     <div class="card-body">
                         <form action="{{ $actionDateAbsen }}" method="post" id="form">
                             {{ csrf_field() }}
+                            <input type="hidden" name="class_room_id" class="class_room_id">
+                            <input type="hidden" name="quiz_id" class="quiz_id">
                             <div class="form-group row">
                                 <div class="col-sm-12 col-md-12">
                                     <label class="block"> Pertemuan </label>
-                                    <input type="text" name="date_absen" class="form-control form-date-absen" placeholder="format: bulan/tanggal | 05/18">
+                                    <input type="text" name="date" class="form-control form-date-absen" placeholder="format: bulan/tanggal | 05/18">
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -249,7 +251,7 @@
 
         function conditionBtnSend() {
             filterQuiz.on('change', function(){
-                $('#quiz_id').val(filterQuiz.val());
+                $('.quiz_id').val(filterQuiz.val());
 
                 if(filterClass.val() && filterQuiz.val() != ''){
                     btnSave.removeAttr('disabled').removeClass('disabled');
@@ -259,7 +261,7 @@
             });
 
             filterClass.on('change', function(){
-                $('#class_room_id').val(filterClass.val());
+                $('.class_room_id').val(filterClass.val());
 
                 if(filterClass.val() && filterQuiz.val() != ''){
                     btnSave.removeAttr('disabled').removeClass('disabled');

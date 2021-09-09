@@ -83,7 +83,6 @@ class StudentActiveController extends Controller
         $total = 0;
         $iTbl = (object) [];
         $data = [];
-        $offset = request('offset');
 
         if(request('quiz_id') != null && request('class_room_id') != null) {
             $iTbl = QuizDate::where('is_deleted', 0)->orderBy('date');
@@ -171,7 +170,33 @@ class StudentActiveController extends Controller
     }
 
     public function storeDateAbsen() {
-        return request()->all();
+        try {
+            DB::beginTransaction();
+
+            $dateQuiz = new QuizDate();
+            $dateQuiz->quiz_id = request('quiz_id');
+            $dateQuiz->class_room_id = request('class_room_id');
+            $dateQuiz->date = request('date');
+            $dateQuiz->is_deleted = 0;
+            $dateQuiz->save();
+
+            $this->flash_message('message', 'success', 'check', 'Data telah dibuat');
+
+            DB::commit();
+            // all good
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            LogError::insert([
+                "message" => $e,
+                "fitur" => "StudentActive@storeDateAbsen",
+                "created_at" => Carbon::now(),
+            ]);
+
+            $this->flash_message('message', 'danger', 'close', 'Data gagal dibuat');
+        }
+
+        return redirect()->route('studentActive.index');
     }
 
     public function deleteStudentActive($id) {
