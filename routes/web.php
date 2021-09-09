@@ -56,9 +56,12 @@ Route::group(['prefix' => 'master'], function() {
 
 Route::group(['prefix' => 'student-active'], function() {
     Route::get('/', 'StudentActiveController@index')->name('studentActive.index');
-    Route::get('ajaxRead', 'StudentActiveController@ajaxRead');
+    Route::get('ajax-read-student-active', 'StudentActiveController@ajaxRead');
+    Route::get('ajax-read-date-absen', 'StudentActiveController@ajaxReadDateAbsen');
     Route::post('store-student', 'StudentActiveController@storeStudent')->name('studentActive.storeStudent');
-    Route::get('delete/{id}', 'StudentActiveController@deleteStudent')->name('studentActive.deleteStudent');
+    Route::post('store-date-absen', 'StudentActiveController@storeDateAbsen')->name('studentActive.storeDateAbsen');
+    Route::get('delete-student-active/{id}', 'StudentActiveController@deleteStudentActive')->name('studentActive.deleteStudentActive');
+    Route::get('delete-date-absen/{id}', 'StudentActiveController@deleteDateAbsen')->name('studentActive.deleteDateAbsen');
 });
 
 Route::group(['prefix' => 'quiz-student'], function() {

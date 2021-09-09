@@ -6,6 +6,7 @@ use App\Models\Absen;
 use App\Models\ClassRoom;
 use App\Models\LogError;
 use App\Models\Quiz;
+use App\Models\QuizDate;
 use App\Models\QuizStudent;
 use App\Models\Student;
 use Carbon\Carbon;
@@ -17,11 +18,12 @@ class StudentActiveController extends Controller
 {
     public function index() {
         $action = route('studentActive.storeStudent');
+        $actionDateAbsen = route('studentActive.storeDateAbsen');
         $quiz = Quiz::where('is_deleted', 0)->get();
         $student = Student::where('is_deleted', 0)->get();
         $classRoom = ClassRoom::where('is_deleted', 0)->get();
 
-        return view('student_active', compact('action', 'classRoom', 'quiz', 'student'));
+        return view('student_active', compact('action', 'classRoom', 'quiz', 'student', 'actionDateAbsen'));
     }
 
     public function ajaxRead() {
@@ -73,6 +75,35 @@ class StudentActiveController extends Controller
         return response()->json([
             "rows" => $data, "data" => $iTbl, "total" => $total,
             "offset" => $offset, "limit" => request('limit'),
+            "search" => request('search'),
+        ]);
+    }
+
+    public function ajaxReadDateAbsen() {
+        $total = 0;
+        $iTbl = (object) [];
+        $data = [];
+        $offset = request('offset');
+
+        if(request('quiz_id') != null && request('class_room_id') != null) {
+            $iTbl = QuizDate::where('is_deleted', 0)->orderBy('date');
+            $iTbl = $iTbl->where('quiz_id', request('quiz_id'));
+            $iTbl = $iTbl->where('class_room_id', request('class_room_id'));
+
+            $iTbl = $iTbl->whereMonth('created_at', '=', Carbon::parse(request('datetime'))->format('m'))
+                        ->whereYear('created_at', '=', Carbon::parse(request('datetime'))->format('Y'));
+
+            if(request("search") != null) {
+                $iTbl = $iTbl->where('date', 'like', '%'.request('search').'%');
+            }
+
+            $total = $iTbl->count();
+            $data = $iTbl->skip(request('offset'))->take(request('limit'))->get();
+        }
+
+        return response()->json([
+            "rows" => $data, "data" => $iTbl, "total" => $total,
+            "offset" => request('offset'), "limit" => request('limit'),
             "search" => request('search'),
         ]);
     }
@@ -139,7 +170,11 @@ class StudentActiveController extends Controller
         return redirect()->route('studentActive.index');
     }
 
-    public function deleteStudent($id) {
+    public function storeDateAbsen() {
+        return request()->all();
+    }
+
+    public function deleteStudentActive($id) {
         $absen = Absen::where('quiz_student_id', $id);
         $quizStudent = QuizStudent::where('id', $id);
 
@@ -148,6 +183,17 @@ class StudentActiveController extends Controller
         ]);
 
         $quizStudent->update([
+            "is_deleted" => 1,
+        ]);
+
+        $this->flash_message('message', 'success', 'check', 'Data telah dihapus');
+        return redirect()->route('studentActive.index');
+    }
+
+    public function deleteDateAbsen($id) {
+        $dateQuiz = QuizDate::find($id);
+
+        $dateQuiz->update([
             "is_deleted" => 1,
         ]);
 

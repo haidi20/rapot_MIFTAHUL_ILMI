@@ -25,7 +25,6 @@
 @section('content')
     <div class="page-body">
         <div class="row">
-
             <div class="col-sm-12 col-md-12">
                 <div class="row">
 
@@ -152,6 +151,37 @@
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <form action="{{ $actionDateAbsen }}" method="post" id="form">
+                            {{ csrf_field() }}
+                            <div class="form-group row">
+                                <div class="col-sm-12 col-md-12">
+                                    <label class="block"> Pertemuan </label>
+                                    <input type="text" name="date_absen" class="form-control form-date-absen" placeholder="format: bulan/tanggal | 05/18">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-12 col-md-12">
+                                    <button type="submit" class="btn btn-sm btn-success btn-save" id="btnSaveDateAbsen">Kirim</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-9">
+                <div class="card">
+                    <div class="card-body">
+                        <h5> Daftar Tanggal Pertemuan </h5>
+
+                        <table id="tbl_date_absen"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 @endsection
@@ -175,6 +205,7 @@
         let frmDateTime = $('#datetime');
         let multiStudent = $('.multi-student');
         let tblStudentActive = $('#student_active');
+        let tblDateAbsen = $('#tbl_date_absen');
 
         let filterQuiz = $('#filter_quiz');
         let filterClass = $('#filter_class');
@@ -191,6 +222,8 @@
             filterDatetime.change(function(){
                 frmDateTime.val(filterDatetime.val());
             });
+
+            readDataDateAbsen();
         });
 
         function remove(index) {
@@ -278,11 +311,12 @@
             // state.dataAbsen = [];
 
             tblStudentActive.bootstrapTable('refresh');
+            tblDateAbsen.bootstrapTable('refresh');
         }
 
         function readData() {
             tblStudentActive.bootstrapTable({
-                url: "{{url('student-active/ajaxRead')}}",
+                url: "{{url('student-active/ajax-read-student-active')}}",
                 method: 'get',
                 locale: 'en-US',
                 classes: 'table table-bordered table-hover',
@@ -291,7 +325,7 @@
                 search: true,
                 pagination: true,
                 sidePagination: 'server',
-                pageSize: 3,
+                pageSize: 15,
                 sortable: true,
                 //idField: 'NRP',
                 queryParams: function(params) {
@@ -307,7 +341,7 @@
                         title: 'Action',
                         formatter: function (value, row, index) {
                             let str = '';
-                            str += `<a type="button" id="remove_${index}" data-link="{{url('student-active/delete')}}/${row.id}" onclick="remove('${index}')" class="btn btn-danger btn-xsm"><i class="fas fa-trash"></i></a>`;
+                            str += `<a type="button" id="remove_${index}" onclick="remove('${index}')" class="btn btn-danger btn-xsm"><i class="fas fa-trash"></i></a>`;
 
                             return str;
                         },
@@ -328,6 +362,50 @@
             });
         }
 
+        function readDataDateAbsen() {
+            tblDateAbsen.bootstrapTable({
+                url: "{{url('student-active/ajax-read-date-absen')}}",
+                method: 'get',
+                locale: 'en-US',
+                classes: 'table table-bordered table-hover',
+                toolbar: '#toolbar',
+                //showRefresh: true,
+                search: true,
+                pagination: true,
+                sidePagination: 'server',
+                pageSize: 4,
+                sortable: true,
+                //idField: 'NRP',
+                queryParams: function(params) {
+                    params.quiz_id = state.quiz_id;
+                    params.class_room_id = state.class_room_id;
+                    params.datetime = state.datetime;
+
+                    return params;
+                },
+                columns: [
+                    {
+                        width: 10,
+                        title: 'Action',
+                        formatter: function (value, row, index) {
+                            let str = '';
+                            str += `<a type="button" id="remove_${index}" onclick="removeDateAbsen('${index}')" class="btn btn-danger btn-xsm"><i class="fas fa-trash"></i></a>`;
+
+                            return str;
+                        },
+                    },
+                    // {
+                    //     field: 'name_class_room',
+                    //     title: 'Nama Kelas',
+                    // },
+                    {
+                        field: 'date',
+                        title: 'Tanggal Pertemuan',
+                    },
+                ]
+            });
+        }
+
         function remove(index) {
             data = tblStudentActive.bootstrapTable('getData');
 
@@ -341,7 +419,28 @@
             }).then((result) => {
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {
-                    location.href = `{{url('student-active/delete')}}/${data[index].id}`;
+                    location.href = `{{url('student-active/delete-student-active')}}/${data[index].id}`;
+                    // Swal.fire('Data terhapus!', '', 'success')
+                } else if (result.isDenied) {
+                    Swal.fire('Data tidak dihapus', '', 'info');
+                }
+            });
+        }
+
+        function removeDateAbsen(index) {
+            data = tblDateAbsen.bootstrapTable('getData');
+
+            Swal.fire({
+                title: 'Yakin hapus tanggal pertemuan <b>'+data[index].date+'</b> ?',
+                showDenyButton: false,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: `Delete`,
+                confirmButtonColor: 'red',
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    location.href = `{{url('student-active/delete-date-absen')}}/${data[index].id}`;
                     // Swal.fire('Data terhapus!', '', 'success')
                 } else if (result.isDenied) {
                     Swal.fire('Data tidak dihapus', '', 'info');
